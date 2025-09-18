@@ -1,0 +1,136 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../generated/prisma"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  firstName String?
+  lastName  String?
+  email     String   @unique
+  hash      String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id                  Int                  @id @default(autoincrement())
+  email               String               @unique
+  hash                String
+  firstName           String?
+  lastName            String?
+  role                String?
+  phoneNumber         String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  carsList            CarsList[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@map("users")
+}
+
+model CarsList {
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  brand        String?
+  model        String?
+  year         Int
+  price        Int
+  mileage      Int
+  fuel         String?
+  transmission String?
+  color        String?
+  location     String?
+  city         String?
+  images       Carimages[] @relation("CarsListImages")
+  user         User        @relation(fields: [userId], references: [id])
+  userId       Int
+
+  @@map("carsList")
+}
+
+model Carimages {
+  id  Int    @id @default(autoincrement())
+  url String
+
+  carId Int?
+  car   CarsList? @relation("CarsListImages", fields: [carId], references: [id])
+
+  allCarId Int?
+  allCar   AllCarsList? @relation("AllCarImages", fields: [allCarId], references: [id])
+
+  userCarId Int?
+  userCar   UserCars? @relation("UserCarImages", fields: [userCarId], references: [id])
+
+  @@map("carImages")
+}
+
+model AllCarsList {
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  brand        String?
+  model        String?
+  year         Int
+  price        Int
+  mileage      Int
+  fuel         String?
+  transmission String?
+  color        String?
+  location     String?
+  city         String?
+  images       Carimages[] @relation("AllCarImages")
+  featured     String?
+  condition    String?
+
+  @@map("allCarsList")
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  method    String
+  url       String
+  status    Int
+  duration  Int
+  userName  String?
+  userId    Int?
+  userRole  String?
+  ip        String?
+  createdAt DateTime @default(now())
+}
+
+model UserCars {
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  brand        String?
+  model        String?
+  year         Int
+  price        Int
+  mileage      Int
+  fuel         String?
+  transmission String?
+  color        String?
+  location     String?
+  city         String?
+  images       Carimages[] @relation("UserCarImages")
+  featured     String?
+  condition    String?
+
+  @@map("userJournal")
+}
+
+model PasswordResetToken {
+  token     String   @id
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  expires   DateTime
+  createdAt DateTime @default(now())
+}
