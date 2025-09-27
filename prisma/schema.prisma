@@ -20,79 +20,6 @@ model Admin {
   updatedAt DateTime @updatedAt
 }
 
-model User {
-  id                  Int                  @id @default(autoincrement())
-  email               String               @unique
-  hash                String
-  firstName           String?
-  lastName            String?
-  role                String?
-  phoneNumber         String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  carsList            CarsList[]
-  passwordResetTokens PasswordResetToken[]
-
-  @@map("users")
-}
-
-model CarsList {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  brand        String?
-  model        String?
-  year         Int
-  price        Int
-  mileage      Int
-  fuel         String?
-  transmission String?
-  color        String?
-  location     String?
-  city         String?
-  images       Carimages[] @relation("CarsListImages")
-  user         User        @relation(fields: [userId], references: [id])
-  userId       Int
-
-  @@map("carsList")
-}
-
-model Carimages {
-  id  Int    @id @default(autoincrement())
-  url String
-
-  carId Int?
-  car   CarsList? @relation("CarsListImages", fields: [carId], references: [id])
-
-  allCarId Int?
-  allCar   AllCarsList? @relation("AllCarImages", fields: [allCarId], references: [id])
-
-  userCarId Int?
-  userCar   UserCars? @relation("UserCarImages", fields: [userCarId], references: [id])
-
-  @@map("carImages")
-}
-
-model AllCarsList {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  brand        String?
-  model        String?
-  year         Int
-  price        Int
-  mileage      Int
-  fuel         String?
-  transmission String?
-  color        String?
-  location     String?
-  city         String?
-  images       Carimages[] @relation("AllCarImages")
-  featured     String?
-  condition    String?
-
-  @@map("allCarsList")
-}
-
 model Log {
   id        Int      @id @default(autoincrement())
   method    String
@@ -106,10 +33,27 @@ model Log {
   createdAt DateTime @default(now())
 }
 
+model User {
+  id                  Int                  @id @default(autoincrement())
+  email               String               @unique
+  hash                String
+  firstName           String?
+  lastName            String?
+  role                String?
+  phoneNumber         String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  userCars            UserCars[]
+  passwordResetTokens PasswordResetToken[]
+  AllCarsList         AllCarsList[]
+
+  @@map("users")
+}
+
 model UserCars {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id           Int          @id @default(autoincrement())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   brand        String?
   model        String?
   year         Int
@@ -117,14 +61,66 @@ model UserCars {
   mileage      Int
   fuel         String?
   transmission String?
+  condition    String?
   color        String?
   location     String?
   city         String?
-  images       Carimages[] @relation("UserCarImages")
-  featured     String?
-  condition    String?
+  description  String?
+  features     String[]
+  name         String?
+  phone        String?
+  email        String?
+  images       Carimages[]  @relation("UserCarImages")
+  userId       Int
+  user         User         @relation(fields: [userId], references: [id])
+  allCar       AllCarsList? @relation(fields: [allCarsListId], references: [id])
+
+  allCarsList   AllCarsList? @relation("UserCarToAllCar") // optional relation
+  allCarsListId Int?
 
   @@map("userJournal")
+}
+
+model AllCarsList {
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  brand        String?
+  model        String?
+  year         Int
+  price        Int
+  mileage      Int
+  fuel         String?
+  transmission String?
+  condition    String?
+  color        String?
+  location     String?
+  city         String?
+  description  String?
+  features     String[]
+  name         String?
+  phone        String?
+  email        String?
+  images       Carimages[] @relation("AllCarImages")
+
+  userCarId Int?      @unique
+  userCar   UserCars? @relation("UserCarToAllCar", fields: [userCarId], references: [id])
+
+  userId   Int?
+  user     User?      @relation(fields: [userId], references: [id])
+  UserCars UserCars[]
+
+  @@map("allCarsList")
+}
+
+model Carimages {
+  id        Int          @id @default(autoincrement())
+  url       String
+  allCarId  Int?
+  allCar    AllCarsList? @relation("AllCarImages", fields: [allCarId], references: [id])
+  userCarId Int?
+  userCar   UserCars?    @relation("UserCarImages", fields: [userCarId], references: [id])
+
+  @@map("carImages")
 }
 
 model PasswordResetToken {
