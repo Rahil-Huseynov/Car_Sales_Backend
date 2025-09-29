@@ -15,14 +15,14 @@ export class UserCarsService {
     transmission: string;
     condition: string;
     color: string;
-    location: string;
-    city: string;
-    description: string;
-    features: string[];
-    name: string;
-    phone: string;
-    status: string;
-    email: string;
+    location?: string;
+    city?: string;
+    description?: string;
+    features?: string[];
+    name?: string;
+    phone?: string;
+    status?: string;
+    email?: string;
     userId: number;
     imagesUrls?: string[];
   }) {
@@ -37,20 +37,21 @@ export class UserCarsService {
         transmission: data.transmission,
         condition: data.condition,
         color: data.color,
+        location: data.location,
         city: data.city,
         description: data.description,
-        features: data.features,
+        features: data.features ?? [],
         name: data.name,
         phone: data.phone,
         status: data.status,
+        email: data.email,
         userId: Number(data.userId),
         images: data.imagesUrls
-          ? { create: data.imagesUrls.map((url) => ({ url })) }
+          ? { create: data.imagesUrls.map((filename) => ({ url: filename })) }
           : undefined,
       },
       include: { images: true },
-    })
-
+    });
 
     const newAllCar = await this.prisma.allCarsList.create({
       data: {
@@ -66,7 +67,7 @@ export class UserCarsService {
         location: newUserCar.location,
         city: newUserCar.city,
         description: newUserCar.description,
-        features: newUserCar.features,
+        features: newUserCar.features ?? [],
         name: newUserCar.name,
         phone: newUserCar.phone,
         email: newUserCar.email,
@@ -74,10 +75,15 @@ export class UserCarsService {
         userCarId: newUserCar.id,
         userId: newUserCar.userId,
         images: data.imagesUrls
-          ? { create: data.imagesUrls.map((url) => ({ url })) }
+          ? { create: data.imagesUrls.map((filename) => ({ url: filename })) }
           : undefined,
       },
       include: { images: true },
+    });
+
+    await this.prisma.userCars.update({
+      where: { id: newUserCar.id },
+      data: { allCar: { connect: { id: newAllCar.id } } },
     });
 
     return { newUserCar, newAllCar };
