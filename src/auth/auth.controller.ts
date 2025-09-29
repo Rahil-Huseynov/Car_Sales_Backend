@@ -110,16 +110,13 @@ export class AuthController {
     @UseGuards(AuthGuard('jwt'))
     @Get('me')
     async getProfile(@Req() req) {
-        if (!req.user.id) {
-            throw new ForbiddenException('User ID not found in token');
-        }
+        if (!req.user.id) throw new ForbiddenException('User ID not found in token');
 
-        if (req.user.isAdmin) {
-            return this.authService.getAdminById(req.user.id);
-        }
-
-        return this.authService.getUserById(req.user.id);
+        if (req.user.isAdmin) return this.authService.getAdminById(req.user.id);
+        return this.authService.getUserWithCars(req.user.id);
     }
+
+
     @UseGuards(JwtGuard)
     @Patch('users/password')
     @UseInterceptors(AnyFilesInterceptor())

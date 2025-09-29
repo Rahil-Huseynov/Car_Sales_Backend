@@ -58,51 +58,75 @@ export class AuthService {
       throw error;
     }
   }
-
   async signin(dto: LoginAuthDto) {
-    const admin = await this.prisma.admin.findUnique({
-      where: { email: dto.email },
-    });
-
+    const admin = await this.prisma.admin.findUnique({ where: { email: dto.email } });
     if (admin) {
       const pwMatches = await argon.verify(admin.hash, dto.password);
       if (!pwMatches) throw new ForbiddenException('Incorrect password');
-
       const token = await this.signToken(admin.id, admin.email, true, admin.role ?? 'admin');
-
       return {
         accessToken: token.access_token,
-        admin: {
-          id: admin.id,
-          firstName: admin.firstName,
-          lastName: admin.lastName,
-          email: admin.email,
-          role: admin.role ?? 'admin',
-        },
+        admin: { id: admin.id, firstName: admin.firstName, lastName: admin.lastName, email: admin.email, role: admin.role ?? 'admin' },
       };
     }
 
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
+      include: { userCars: { include: { images: true } } },
     });
 
     if (!user) throw new ForbiddenException('User not found');
-
     const pwMatches = await argon.verify(user.hash, dto.password);
     if (!pwMatches) throw new ForbiddenException('Incorrect password');
 
     return {
       accessToken: (await this.signToken(user.id, user.email, false, user.role ?? 'client')).access_token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
+      user: this.formatUserWithCars(user),
     };
+  }
+
+  private formatUserWithCars(user: any) {
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      createdAt: user.createdAt,
+      userCars: user.userCars?.map(car => ({
+        id: car.id,
+        brand: car.brand,
+        model: car.model,
+        year: car.year,
+        price: car.price,
+        mileage: car.mileage,
+        fuel: car.fuel,
+        transmission: car.transmission,
+        condition: car.condition,
+        color: car.color,
+        location: car.location,
+        city: car.city,
+        description: car.description,
+        features: car.features,
+        name: car.name,
+        phone: car.phone,
+        email: car.email,
+        createdAt: car.createdAt,
+        updatedAt: car.updatedAt,
+        images: car.images?.map(img => ({ id: img.id, url: img.url })),
+      })),
+    };
+  }
+
+  async getUserWithCars(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { userCars: { include: { images: true } } },
+    });
+
+    if (!user) throw new ForbiddenException('User not found');
+    return this.formatUserWithCars(user);
   }
 
   async signToken(

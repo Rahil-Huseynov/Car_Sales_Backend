@@ -21,6 +21,7 @@ export class UserCarsService {
     features: string[];
     name: string;
     phone: string;
+    status: string;
     email: string;
     userId: number;
     imagesUrls?: string[];
@@ -41,7 +42,7 @@ export class UserCarsService {
         features: data.features,
         name: data.name,
         phone: data.phone,
-        email: data.email,
+        status: data.status,
         userId: Number(data.userId),
         images: data.imagesUrls
           ? { create: data.imagesUrls.map((url) => ({ url })) }
@@ -69,6 +70,7 @@ export class UserCarsService {
         name: newUserCar.name,
         phone: newUserCar.phone,
         email: newUserCar.email,
+        status: newUserCar.status,
         userCarId: newUserCar.id,
         userId: newUserCar.userId,
         images: data.imagesUrls
