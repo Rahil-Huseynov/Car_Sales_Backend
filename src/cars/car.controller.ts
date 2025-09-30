@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { CarsService, FilterOptions } from './cars.service';
 
 @Controller('car')
@@ -79,4 +79,9 @@ export class CarsController {
       sortBy,
     });
   }
+  @Get(':id')
+  async getCarById(@Param('id', ParseIntPipe) id: number) {
+    return this.carsService.getCarById(id);
+  }
+
 }

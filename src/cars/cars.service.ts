@@ -178,7 +178,7 @@ export class CarsService {
         if (limitNumber > maxLimit) limitNumber = maxLimit;
         if (pageNumber <= 0) pageNumber = 1;
 
-        const where: any = { status: 'premium' }; 
+        const where: any = { status: 'premium' };
 
         if (filters.brand && filters.brand !== "all") where.brand = filters.brand;
         if (filters.model && filters.model !== "all") where.model = filters.model;
@@ -234,4 +234,54 @@ export class CarsService {
             currentPage: pageNumber,
         };
     }
+    async getCarById(id: number) {
+        const car = await this.prisma.allCarsList.findUnique({
+            where: { id },
+            include: {
+                images: true,
+                user: true,
+            },
+        });
+
+        if (!car) {
+            return null; 
+        }
+
+        return {
+            id: car.id,
+            brand: car.brand,
+            model: car.model,
+            year: car.year,
+            price: car.price,
+            mileage: car.mileage,
+            fuel: car.fuel,
+            transmission: car.transmission,
+            condition: car.condition,
+            color: car.color,
+            location: car.location,
+            city: car.city,
+            description: car.description,
+            features: car.features ?? [],
+            name: car.name,
+            phone: car.phone,
+            email: car.email,
+            status: car.status,
+            createdAt: car.createdAt,
+            user: car.user
+                ? {
+                    id: car.user.id,
+                    firstName: car.user.firstName,
+                    lastName: car.user.lastName,
+                    email: car.user.email,
+                    phoneNumber: car.user.phoneNumber,
+                }
+                : null,
+            images:
+                car.images?.map((img: any) => ({
+                    id: img.id,
+                    url: this.normalizeUrl(String(img.url ?? '')),
+                })) ?? [],
+        };
+    }
+
 }
