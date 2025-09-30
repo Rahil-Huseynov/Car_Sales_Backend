@@ -3,7 +3,7 @@ import { CarsService, FilterOptions } from './cars.service';
 
 @Controller('car')
 export class CarsController {
-  constructor(private readonly carsService: CarsService) {}
+  constructor(private readonly carsService: CarsService) { }
 
   @Get('all')
   async getAllCars(
@@ -48,38 +48,35 @@ export class CarsController {
   @Get('premium')
   async getPremiumCars(
     @Query('page') page = '1',
-    @Query('limit') limit = '20',
-    @Query('search') search?: string,
+    @Query('limit') limit = '12',
+    @Query('search') search = '',
     @Query('brand') brand?: string,
     @Query('model') model?: string,
-    @Query('year') year?: string,
+    @Query('year') year?: number,
     @Query('fuel') fuel?: string,
     @Query('transmission') transmission?: string,
     @Query('condition') condition?: string,
     @Query('color') color?: string,
     @Query('city') city?: string,
-    @Query('minPrice') minPrice?: string,
-    @Query('maxPrice') maxPrice?: string,
+    @Query('minPrice') minPrice?: number,
+    @Query('maxPrice') maxPrice?: number,
     @Query('sortBy') sortBy?: string,
   ) {
-    const pageNumber = parseInt(page, 10) || 1;
-    const limitNumber = parseInt(limit, 10) || 20;
-
-    const filters: FilterOptions = {
+    return this.carsService.getPremiumCarsFromAllList({
+      page: Number(page),
+      limit: Number(limit),
       search,
       brand,
       model,
+      year: year ? Number(year) : undefined,
       fuel,
       transmission,
       condition,
       color,
       city,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
       sortBy,
-      year: year ? parseInt(year, 10) : undefined,
-      minPrice: minPrice ? parseInt(minPrice, 10) : undefined,
-      maxPrice: maxPrice ? parseInt(maxPrice, 10) : undefined,
-    };
-
-    return this.carsService.getPremiumCarsFromAllList(pageNumber, limitNumber, filters);
+    });
   }
 }
