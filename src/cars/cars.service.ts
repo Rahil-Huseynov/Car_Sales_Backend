@@ -8,6 +8,10 @@ export type FilterOptions = {
     model?: string;
     year?: number;
     fuel?: string;
+    location?: string;
+    ban?: string;
+    engine?: string;
+    gearbox?: string;
     transmission?: string;
     condition?: string;
     color?: string;
@@ -59,6 +63,10 @@ export class CarsService {
         if (filters.brand && filters.brand !== 'all') where.brand = filters.brand;
         if (filters.model && filters.model !== 'all') where.model = filters.model;
         if (filters.fuel && filters.fuel !== 'all') where.fuel = filters.fuel;
+        if (filters.location && filters.location !== 'all') where.location = filters.location;
+        if (filters.ban && filters.ban !== 'all') where.ban = filters.ban;
+        if (filters.engine && filters.engine !== 'all') where.engine = filters.engine;
+        if (filters.gearbox && filters.gearbox !== 'all') where.gearbox = filters.gearbox;
         if (filters.transmission && filters.transmission !== 'all') where.transmission = filters.transmission;
         if (filters.condition && filters.condition !== 'all') where.condition = filters.condition;
         if (filters.color && filters.color !== 'all') where.color = filters.color;
@@ -183,6 +191,10 @@ export class CarsService {
         if (filters.brand && filters.brand !== "all") where.brand = filters.brand;
         if (filters.model && filters.model !== "all") where.model = filters.model;
         if (filters.fuel && filters.fuel !== "all") where.fuel = filters.fuel;
+        if (filters.location && filters.location !== 'all') where.location = filters.location;
+        if (filters.ban && filters.ban !== 'all') where.ban = filters.ban;
+        if (filters.engine && filters.engine !== 'all') where.engine = filters.engine;
+        if (filters.gearbox && filters.gearbox !== 'all') where.gearbox = filters.gearbox;
         if (filters.transmission && filters.transmission !== "all") where.transmission = filters.transmission;
         if (filters.condition && filters.condition !== "all") where.condition = filters.condition;
         if (filters.color && filters.color !== "all") where.color = filters.color;
@@ -244,7 +256,7 @@ export class CarsService {
         });
 
         if (!car) {
-            return null; 
+            return null;
         }
 
         return {
@@ -255,6 +267,9 @@ export class CarsService {
             price: car.price,
             mileage: car.mileage,
             fuel: car.fuel,
+            ban: car.ban,
+            engine: car.engine,
+            gearbox: car.gearbox,
             transmission: car.transmission,
             condition: car.condition,
             color: car.color,

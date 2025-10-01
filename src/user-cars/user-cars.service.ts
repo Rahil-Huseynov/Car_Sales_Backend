@@ -16,6 +16,9 @@ export class UserCarsService {
     condition: string;
     color: string;
     location?: string;
+    ban?: string;
+    engine?: string;
+    gearbox?: string;
     city?: string;
     description?: string;
     features?: string[];
@@ -38,6 +41,9 @@ export class UserCarsService {
         condition: data.condition,
         color: data.color,
         location: data.location,
+        ban: data.ban,
+        engine: data.engine,
+        gearbox: data.gearbox,
         city: data.city,
         description: data.description,
         features: data.features ?? [],
@@ -65,6 +71,9 @@ export class UserCarsService {
         condition: newUserCar.condition,
         color: newUserCar.color,
         location: newUserCar.location,
+        ban: newUserCar.ban,
+        engine: newUserCar.engine,
+        gearbox: newUserCar.gearbox,
         city: newUserCar.city,
         description: newUserCar.description,
         features: newUserCar.features ?? [],

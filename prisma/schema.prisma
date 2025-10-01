@@ -63,7 +63,10 @@ model UserCars {
   transmission String?
   condition    String?
   color        String?
+  ban          String?
   location     String?
+  engine       String?
+  gearbox      String?
   city         String?
   description  String?
   features     String[]
@@ -94,7 +97,10 @@ model AllCarsList {
   transmission String?
   condition    String?
   color        String?
+  ban          String?
   location     String?
+  engine       String?
+  gearbox      String?
   city         String?
   description  String?
   features     String[]
