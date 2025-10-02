@@ -12,10 +12,8 @@ export type FilterOptions = {
     ban?: string;
     engine?: string;
     gearbox?: string;
-    transmission?: string;
     condition?: string;
     color?: string;
-    city?: string;
     minPrice?: number;
     maxPrice?: number;
     sortBy?: string;
@@ -67,10 +65,8 @@ export class CarsService {
         if (filters.ban && filters.ban !== 'all') where.ban = filters.ban;
         if (filters.engine && filters.engine !== 'all') where.engine = filters.engine;
         if (filters.gearbox && filters.gearbox !== 'all') where.gearbox = filters.gearbox;
-        if (filters.transmission && filters.transmission !== 'all') where.transmission = filters.transmission;
         if (filters.condition && filters.condition !== 'all') where.condition = filters.condition;
         if (filters.color && filters.color !== 'all') where.color = filters.color;
-        if (filters.city && filters.city !== 'all') where.city = filters.city;
         if (typeof filters.year === 'number' && !Number.isNaN(filters.year)) where.year = filters.year;
 
         if (typeof filters.minPrice === 'number' || typeof filters.maxPrice === 'number') {
@@ -84,7 +80,6 @@ export class CarsService {
             where.OR = [
                 { brand: { contains: q, mode: 'insensitive' } },
                 { model: { contains: q, mode: 'insensitive' } },
-                { city: { contains: q, mode: 'insensitive' } },
                 { location: { contains: q, mode: 'insensitive' } },
             ];
         }
@@ -138,11 +133,12 @@ export class CarsService {
             price: car.price,
             mileage: car.mileage,
             fuel: car.fuel,
-            transmission: car.transmission,
             condition: car.condition,
             color: car.color,
             location: car.location,
-            city: car.city,
+            ban: car.ban,
+            engine: car.engine,
+            gearbox: car.gearbox,
             description: car.description,
             features: car.features ?? [],
             name: car.name,
@@ -195,10 +191,8 @@ export class CarsService {
         if (filters.ban && filters.ban !== 'all') where.ban = filters.ban;
         if (filters.engine && filters.engine !== 'all') where.engine = filters.engine;
         if (filters.gearbox && filters.gearbox !== 'all') where.gearbox = filters.gearbox;
-        if (filters.transmission && filters.transmission !== "all") where.transmission = filters.transmission;
         if (filters.condition && filters.condition !== "all") where.condition = filters.condition;
         if (filters.color && filters.color !== "all") where.color = filters.color;
-        if (filters.city && filters.city !== "all") where.city = filters.city;
         if (typeof filters.year === "number" && !Number.isNaN(filters.year)) where.year = filters.year;
 
         if (typeof filters.minPrice === "number" || typeof filters.maxPrice === "number") {
@@ -211,7 +205,7 @@ export class CarsService {
             where.OR = [
                 { brand: { contains: filters.search, mode: "insensitive" } },
                 { model: { contains: filters.search, mode: "insensitive" } },
-                { city: { contains: filters.search, mode: "insensitive" } },
+                { location: { contains: filters.search, mode: "insensitive" } },
             ];
         }
 
@@ -270,11 +264,9 @@ export class CarsService {
             ban: car.ban,
             engine: car.engine,
             gearbox: car.gearbox,
-            transmission: car.transmission,
             condition: car.condition,
             color: car.color,
             location: car.location,
-            city: car.city,
             description: car.description,
             features: car.features ?? [],
             name: car.name,

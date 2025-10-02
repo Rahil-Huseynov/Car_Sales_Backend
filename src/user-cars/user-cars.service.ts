@@ -12,14 +12,12 @@ export class UserCarsService {
     price: number;
     mileage: number;
     fuel: string;
-    transmission: string;
     condition: string;
     color: string;
     location?: string;
     ban?: string;
     engine?: string;
     gearbox?: string;
-    city?: string;
     description?: string;
     features?: string[];
     name?: string;
@@ -37,14 +35,12 @@ export class UserCarsService {
         price: Number(data.price),
         mileage: Number(data.mileage),
         fuel: data.fuel,
-        transmission: data.transmission,
         condition: data.condition,
         color: data.color,
         location: data.location,
         ban: data.ban,
         engine: data.engine,
         gearbox: data.gearbox,
-        city: data.city,
         description: data.description,
         features: data.features ?? [],
         name: data.name,
@@ -67,14 +63,12 @@ export class UserCarsService {
         price: newUserCar.price,
         mileage: newUserCar.mileage,
         fuel: newUserCar.fuel,
-        transmission: newUserCar.transmission,
         condition: newUserCar.condition,
         color: newUserCar.color,
         location: newUserCar.location,
         ban: newUserCar.ban,
         engine: newUserCar.engine,
         gearbox: newUserCar.gearbox,
-        city: newUserCar.city,
         description: newUserCar.description,
         features: newUserCar.features ?? [],
         name: newUserCar.name,
