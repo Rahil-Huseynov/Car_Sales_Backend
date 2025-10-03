@@ -7,12 +7,22 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { CACHE_MANAGER, CacheInterceptor } from '@nestjs/cache-manager';
 import * as compression from 'compression';
+import * as express from 'express';
+import { ApiKeyGuard } from './guard/api-key.guard';
+import { ConfigService } from '@nestjs/config';
 // import { CustomCacheInterceptor } from './common/interceptors/custom-cache.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     // logger: ['error', 'warn', 'debug', 'log', 'verbose'],
   });
+
+
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+  const configService = app.get(ConfigService); 
+  app.useGlobalGuards(new ApiKeyGuard(configService)); 
+
 
   // app.use(
   //   helmet({
@@ -68,7 +78,7 @@ async function bootstrap() {
       }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'], 
   });
 
   app.setGlobalPrefix('api');
