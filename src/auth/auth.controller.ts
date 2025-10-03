@@ -70,15 +70,19 @@ export class AuthController {
         return this.authService.deleteAdmin(id);
     }
 
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(JwtGuard)
     @Put('users/:id')
-    @UseInterceptors(AnyFilesInterceptor())
     async updateUser(
         @Param('id', ParseIntPipe) id: number,
-        @Req() req
+        @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })) dto: UpdateUserDto,
+        @Req() req,
     ) {
-        return this.authService.putUser(id, req.body);
+        if (req.user?.sub !== id && !req.user?.isAdmin) {
+            throw new ForbiddenException('Unauthorized to update this user');
+        }
+        return this.authService.putUser(id, dto);
     }
+
 
     @Post('forgot-password')
     forgotPassword(

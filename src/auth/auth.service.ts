@@ -264,31 +264,37 @@ export class AuthService {
     return { message: "Admin uğurla silindi" };
   }
 
-  async putUser(userId: number, dto: any) {
+  async putUser(userId: number, dto: Partial<UpdateUserDto>) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new ForbiddenException('User not found');
-
-    const updateData: any = { ...dto };
-
-    if (updateData.passportId === '') {
-      updateData.passportId = null;
+    if (dto.email && dto.email !== user.email) {
+      const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
+      if (existing) {
+        throw new BadRequestException('Bu email artıq istifadə olunur');
+      }
     }
-    updateData.isForeignCitizen = updateData.isForeignCitizen === 'true' || updateData.isForeignCitizen === true;
+    const allowed: Partial<any> = {};
+    if (dto.firstName !== undefined) allowed.firstName = dto.firstName;
+    if (dto.lastName !== undefined) allowed.lastName = dto.lastName;
+    if (dto.email !== undefined) allowed.email = dto.email;
+    if (dto.phoneNumber !== undefined) allowed.phoneNumber = dto.phoneNumber;
 
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
-      data: updateData,
+      data: allowed,
       select: {
         id: true,
         email: true,
         firstName: true,
         lastName: true,
         phoneNumber: true,
+        createdAt: true,
       },
     });
 
     return updatedUser;
   }
+
 
   async deleteUser(userId: number) {
     const user = await this.prisma.user.findUnique({
