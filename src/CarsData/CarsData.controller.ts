@@ -13,17 +13,17 @@ export class CarsDataController {
   }
 
   @Get('keys')
-  getAllKeys(@Query('page') page: string, @Query('limit') limit: string) {
+  getAllKeys(@Query('page') page: string, @Query('limit') limit: string, @Query('search') search?: string,) {
     const pageNum = page ? parseInt(page) : 1;
     const limitNum = limit ? parseInt(limit) : 10;
-    return this.CarsDataService.getAllKeysSortedPaginated(pageNum, limitNum);
+    return this.CarsDataService.getAllKeysSortedPaginated(pageNum, limitNum, search);
   }
 
   @Get('values')
-  getAllValues(@Query('page') page: string, @Query('limit') limit: string) {
+  getAllValues(@Query('page') page: string, @Query('limit') limit: string,@Query('search') search?: string,) {
     const pageNum = page ? parseInt(page) : 1;
     const limitNum = limit ? parseInt(limit) : 10;
-    return this.CarsDataService.getAllValuesSortedPaginated(pageNum, limitNum);
+    return this.CarsDataService.getAllValuesSortedPaginated(pageNum, limitNum,search);
   }
 
   @Get('brand/:key')
