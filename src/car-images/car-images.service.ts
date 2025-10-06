@@ -1,10 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class CarImagesService {
-  constructor(private prisma: PrismaService) {}
+  private readonly uploadDir: string;
+  private readonly logger = new Logger(CarImagesService.name);
 
+  constructor(private prisma: PrismaService) {
+    this.uploadDir = process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads');
+  }
   async addImages(userCarId: number, urls: string[]) {
     const id = Number(userCarId);
     if (Number.isNaN(id)) throw new BadRequestException('Invalid userCarId');
@@ -37,6 +43,21 @@ export class CarImagesService {
   }
 
   async deleteImage(id: number) {
+    const image = await this.prisma.carimages.findUnique({ where: { id } });
+    if (!image) throw new BadRequestException('Image not found');
+
+    const url = image.url;
+    if (url && !/^https?:\/\//i.test(url)) {
+      const filePath = path.join(this.uploadDir, url);
+      try {
+        await fs.unlink(filePath);
+      } catch (err: any) {
+        if (err.code !== 'ENOENT') {
+          this.logger.warn(`Failed to delete file ${filePath}: ${err?.message ?? err}`);
+        }
+      }
+    }
+
     return this.prisma.carimages.delete({ where: { id } });
   }
 }

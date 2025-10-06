@@ -110,6 +110,7 @@ export class AuthService {
         description: car.description,
         features: car.features,
         name: car.name,
+        allCarsListId: car.allCarsListId ?? car.allCar?.id ?? null,
         phone: car.phone,
         email: car.email,
         createdAt: car.createdAt,
@@ -122,12 +123,20 @@ export class AuthService {
   async getUserWithCars(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { userCars: { include: { images: true } } },
+      include: {
+        userCars: {
+          include: {
+            images: true,
+            allCar: { include: { images: true } }, 
+          },
+        },
+      },
     });
 
     if (!user) throw new ForbiddenException('User not found');
     return this.formatUserWithCars(user);
   }
+
 
   async signToken(
     userId: number,

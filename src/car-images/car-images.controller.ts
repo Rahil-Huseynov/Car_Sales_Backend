@@ -39,7 +39,7 @@ export class CarImagesController {
     @UploadedFiles() files: Express.Multer.File[],
     @Body('userCarId') userCarId: number,
   ) {
-    const urls = files.map((file) => file.filename); 
+    const urls = files.map((file) => file.filename);
     return this.carImagesService.addImages(userCarId, urls);
   }
 

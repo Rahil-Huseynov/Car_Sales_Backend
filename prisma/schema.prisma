@@ -50,75 +50,74 @@ model User {
   @@map("users")
 }
 
-model UserCars {
-  id           Int          @id @default(autoincrement())
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  brand        String?
-  model        String?
-  year         Int
-  price        Int
-  mileage      Int
-  fuel         String?
-  transmission String?
-  condition    String?
-  color        String?
-  ban          String?
-  location     String?
-  engine       String?
-  gearbox      String?
-  city         String?
-  description  String?
-  features     String[]
-  name         String?
-  phone        String?
-  status       String?
-  email        String?
-  images       Carimages[]  @relation("UserCarImages")
-  userId       Int
-  user         User         @relation(fields: [userId], references: [id])
-  allCar       AllCarsList? @relation(fields: [allCarsListId], references: [id])
 
-  allCarsList   AllCarsList? @relation("UserCarToAllCar") // optional relation
-  allCarsListId Int?
+model UserCars {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  brand         String?
+  model         String?
+  year          Int
+  price         Int
+  mileage       Int
+  fuel          String?
+  transmission  String?
+  condition     String?
+  color         String?
+  ban           String?
+  location      String?
+  engine        String?
+  gearbox       String?
+  city          String?
+  description   String?
+  features      String[]
+  name          String?
+  phone         String?
+  status        String?
+  email         String?
+  images        Carimages[]  @relation("UserCarImages")
+  userId        Int
+  user          User         @relation(fields: [userId], references: [id])
+
+  allCarsListId Int?         @unique
+  allCar        AllCarsList? @relation("UserCarToAllCar", fields: [allCarsListId], references: [id])
 
   @@map("userJournal")
 }
 
 model AllCarsList {
-  id           Int         @id @default(autoincrement())
-  createdAt    DateTime    @default(now())
-  brand        String?
-  model        String?
-  year         Int
-  price        Int
-  mileage      Int
-  fuel         String?
+  id        Int         @id @default(autoincrement())
+  createdAt DateTime    @default(now())
+  brand     String?
+  model     String?
+  year      Int
+  price     Int
+  mileage   Int
+  fuel      String?
   transmission String?
-  condition    String?
-  color        String?
-  ban          String?
-  location     String?
-  engine       String?
-  gearbox      String?
-  city         String?
-  description  String?
-  features     String[]
-  name         String?
-  phone        String?
-  email        String?
-  status       String?
-  images       Carimages[] @relation("AllCarImages")
+  condition String?
+  color     String?
+  ban       String?
+  location  String?
+  engine    String?
+  gearbox   String?
+  city      String?
+  description String?
+  features  String[]
+  name      String?
+  phone     String?
+  email     String?
+  status    String?
+  images    Carimages[] @relation("AllCarImages")
 
-  userCarId Int?      @unique
-  userCar   UserCars? @relation("UserCarToAllCar", fields: [userCarId], references: [id])
+  userCar   UserCars? @relation("UserCarToAllCar")
 
   userId   Int?
   user     User?      @relation(fields: [userId], references: [id])
-  UserCars UserCars[]
 
   @@map("allCarsList")
 }
+
 
 model Carimages {
   id        Int          @id @default(autoincrement())

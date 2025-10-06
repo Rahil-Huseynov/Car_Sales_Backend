@@ -20,8 +20,8 @@ async function bootstrap() {
 
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-  const configService = app.get(ConfigService); 
-  app.useGlobalGuards(new ApiKeyGuard(configService)); 
+  const configService = app.get(ConfigService);
+  app.useGlobalGuards(new ApiKeyGuard(configService));
 
 
   // app.use(
@@ -77,8 +77,9 @@ async function bootstrap() {
         callback(new Error('Not allowed by CORS'));
       }
     },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'], 
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
   });
 
   app.setGlobalPrefix('api');
