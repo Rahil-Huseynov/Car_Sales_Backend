@@ -29,6 +29,7 @@ export class UserCarsService {
     features?: string[];
     name?: string;
     phone?: string;
+    phoneCode?: string;
     status?: string;
     email?: string;
     userId: number;
@@ -52,6 +53,7 @@ export class UserCarsService {
         features: data.features ?? [],
         name: data.name,
         phone: data.phone,
+        phoneCode: data.phoneCode,
         status: data.status,
         email: data.email,
         userId: Number(data.userId),
@@ -80,6 +82,7 @@ export class UserCarsService {
         features: newUserCar.features ?? [],
         name: newUserCar.name,
         phone: newUserCar.phone,
+        phoneCode: newUserCar.phoneCode,
         email: newUserCar.email,
         status: newUserCar.status,
         userCar: { connect: { id: newUserCar.id } },
@@ -105,57 +108,58 @@ export class UserCarsService {
     });
   }
 
-async getUserCarById(id: number) {
-  const car = await this.prisma.userCars.findUnique({
-    where: { id },
-    include: {
-      images: true,
-      allCar: {
-        include: { images: true },
+  async getUserCarById(id: number) {
+    const car = await this.prisma.userCars.findUnique({
+      where: { id },
+      include: {
+        images: true,
+        allCar: {
+          include: { images: true },
+        },
       },
-    },
-  });
+    });
 
-  if (!car) return null;
-  const normalizeUrl = (u: string | null | undefined) =>
-    !u ? '/placeholder.svg' : String(u).replace(/^\/+/, '');
-  const images = (car.images ?? []).map((i) => ({ id: i.id, url: normalizeUrl(i.url) }));
-  const allCar = car.allCar
-    ? {
+    if (!car) return null;
+    const normalizeUrl = (u: string | null | undefined) =>
+      !u ? '/placeholder.svg' : String(u).replace(/^\/+/, '');
+    const images = (car.images ?? []).map((i) => ({ id: i.id, url: normalizeUrl(i.url) }));
+    const allCar = car.allCar
+      ? {
         ...car.allCar,
         images: (car.allCar.images ?? []).map((i) => ({ id: i.id, url: normalizeUrl(i.url) })),
       }
-    : null;
+      : null;
 
-  return {
-    id: car.id,
-    brand: car.brand,
-    model: car.model,
-    year: car.year,
-    price: car.price,
-    mileage: car.mileage,
-    fuel: car.fuel,
-    transmission: car.transmission,
-    condition: car.condition,
-    color: car.color,
-    ban: car.ban,
-    location: car.location,
-    engine: car.engine,
-    gearbox: car.gearbox,
-    city: car.city,
-    description: car.description,
-    features: car.features,
-    name: car.name,
-    phone: car.phone,
-    status: car.status,
-    email: car.email,
-    createdAt: car.createdAt,
-    updatedAt: car.updatedAt,
-    images,
-    allCar,
-    allCarsListId: car.allCarsListId ?? car.allCar?.id ?? null,
-  };
-}
+    return {
+      id: car.id,
+      brand: car.brand,
+      model: car.model,
+      year: car.year,
+      price: car.price,
+      mileage: car.mileage,
+      fuel: car.fuel,
+      transmission: car.transmission,
+      condition: car.condition,
+      color: car.color,
+      ban: car.ban,
+      location: car.location,
+      engine: car.engine,
+      gearbox: car.gearbox,
+      city: car.city,
+      description: car.description,
+      features: car.features,
+      name: car.name,
+      phone: car.phone,
+      phoneCode: car.phoneCode,
+      status: car.status,
+      email: car.email,
+      createdAt: car.createdAt,
+      updatedAt: car.updatedAt,
+      images,
+      allCar,
+      allCarsListId: car.allCarsListId ?? car.allCar?.id ?? null,
+    };
+  }
 
   async updateUserCar(id: number, data: any) {
     const userCar = await this.prisma.userCars.findUnique({
@@ -183,6 +187,7 @@ async getUserCarById(id: number) {
       'features',
       'name',
       'phone',
+      'phoneCode',
       'status',
       'email',
       'userId',

@@ -76,6 +76,7 @@ model UserCars {
   phone         String?
   status        String?
   email         String?
+  phoneCode     String?
   images        Carimages[]  @relation("UserCarImages")
   userId        Int
   user          User         @relation(fields: [userId], references: [id])
@@ -107,6 +108,7 @@ model AllCarsList {
   features  String[]
   name      String?
   phone     String?
+  phoneCode String?
   email     String?
   status    String?
   images    Carimages[] @relation("AllCarImages")

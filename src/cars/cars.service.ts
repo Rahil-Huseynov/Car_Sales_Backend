@@ -143,6 +143,7 @@ export class CarsService {
             features: car.features ?? [],
             name: car.name,
             phone: car.phone,
+            phoneCode: car.phoneCode,
             email: car.email,
             status: car.status,
             createdAt: car.createdAt,
@@ -153,6 +154,7 @@ export class CarsService {
                     lastName: car.user.lastName,
                     email: car.user.email,
                     phoneNumber: car.user.phoneNumber,
+                    phoneCode: car.user.phoneCode,
                 }
                 : null,
             images:
@@ -271,6 +273,7 @@ export class CarsService {
             features: car.features ?? [],
             name: car.name,
             phone: car.phone,
+            phoneCode: car.phoneCode,
             email: car.email,
             status: car.status,
             createdAt: car.createdAt,
@@ -281,6 +284,7 @@ export class CarsService {
                     lastName: car.user.lastName,
                     email: car.user.email,
                     phoneNumber: car.user.phoneNumber,
+                    phoneCode: car.user.phoneCode,
                 }
                 : null,
             images:
