@@ -271,10 +271,6 @@ export class CarsService {
             location: car.location,
             description: car.description,
             features: car.features ?? [],
-            name: car.name,
-            phone: car.phone,
-            phoneCode: car.phoneCode,
-            email: car.email,
             status: car.status,
             createdAt: car.createdAt,
             user: car.user

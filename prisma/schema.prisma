@@ -62,21 +62,15 @@ model UserCars {
   price         Int
   mileage       Int
   fuel          String?
-  transmission  String?
   condition     String?
   color         String?
   ban           String?
   location      String?
   engine        String?
   gearbox       String?
-  city          String?
   description   String?
   features      String[]
-  name          String?
-  phone         String?
   status        String?
-  email         String?
-  phoneCode     String?
   images        Carimages[]  @relation("UserCarImages")
   userId        Int
   user          User         @relation(fields: [userId], references: [id])
@@ -96,20 +90,14 @@ model AllCarsList {
   price     Int
   mileage   Int
   fuel      String?
-  transmission String?
   condition String?
   color     String?
   ban       String?
   location  String?
   engine    String?
   gearbox   String?
-  city      String?
   description String?
   features  String[]
-  name      String?
-  phone     String?
-  phoneCode String?
-  email     String?
   status    String?
   images    Carimages[] @relation("AllCarImages")
 
