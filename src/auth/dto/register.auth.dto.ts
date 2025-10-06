@@ -25,7 +25,7 @@ export class RegisterAuthDto {
   @IsString()
   @IsNotEmpty()
   lastName?: string;
-  
+
   @IsString()
   @IsNotEmpty()
   role?: string;
@@ -34,4 +34,7 @@ export class RegisterAuthDto {
   @IsNotEmpty()
   phoneNumber?: string;
 
+  @IsString()
+  @IsNotEmpty()
+  phoneCode?: string;
 }

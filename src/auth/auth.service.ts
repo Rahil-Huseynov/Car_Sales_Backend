@@ -36,6 +36,7 @@ export class AuthService {
           firstName: dto.firstName,
           lastName: dto.lastName,
           phoneNumber: dto.phoneNumber,
+          phoneCode: dto.phoneCode,
           role: dto.role,
         },
       });
@@ -50,6 +51,7 @@ export class AuthService {
           firstName: user.firstName,
           lastName: user.lastName,
           phoneNumber: user.phoneNumber,
+          phoneCode: user.phoneCode,
           role: user.role,
           createdAt: user.createdAt,
         },
@@ -92,6 +94,7 @@ export class AuthService {
       firstName: user.firstName,
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
+      phoneCode: user.phoneCode,
       role: user.role,
       createdAt: user.createdAt,
       userCars: user.userCars?.map(car => ({
@@ -127,7 +130,7 @@ export class AuthService {
         userCars: {
           include: {
             images: true,
-            allCar: { include: { images: true } }, 
+            allCar: { include: { images: true } },
           },
         },
       },
@@ -181,6 +184,7 @@ export class AuthService {
           firstName: true,
           lastName: true,
           phoneNumber: true,
+          phoneCode: true,
           role: true,
         },
       }),
@@ -287,6 +291,7 @@ export class AuthService {
     if (dto.lastName !== undefined) allowed.lastName = dto.lastName;
     if (dto.email !== undefined) allowed.email = dto.email;
     if (dto.phoneNumber !== undefined) allowed.phoneNumber = dto.phoneNumber;
+    if (dto.phoneCode !== undefined) allowed.phoneCode = dto.phoneCode;
 
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
@@ -297,6 +302,7 @@ export class AuthService {
         firstName: true,
         lastName: true,
         phoneNumber: true,
+        phoneCode: true,
         createdAt: true,
       },
     });
@@ -332,6 +338,7 @@ export class AuthService {
         lastName: true,
         role: true,
         phoneNumber: true,
+        phoneCode: true,
         createdAt: true,
       },
     });
