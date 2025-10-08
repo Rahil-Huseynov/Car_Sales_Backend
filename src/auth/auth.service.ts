@@ -155,7 +155,7 @@ export class AuthService {
     };
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: '15m',
+      expiresIn: '1d',
       secret: secret,
     });
 
@@ -408,7 +408,7 @@ export class AuthService {
   }
 
 
-  async forgotPassword(email: string, locale: string) {
+  async forgotPassword(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new ForbiddenException('İstifadəçi tapılmadı');
 
@@ -423,13 +423,13 @@ export class AuthService {
     });
 
     const baseUrl = this.config.get('FRONTEND_URL');
-    const formattedLocale = locale.startsWith('/') ? locale : `/${locale}`;
-    const resetUrl = `${baseUrl}${formattedLocale}/auth/reset-password?token=${token}`;
+    const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
 
     await this.sendResetEmail(user.email, resetUrl);
 
     return { message: 'Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi.' };
   }
+
   async resetPassword(token: string, newPassword: string) {
     const tokenRecord = await this.prisma.passwordResetToken.findUnique({
       where: { token },
@@ -466,7 +466,7 @@ export class AuthService {
     });
 
     await transporter.sendMail({
-      from: `"ScientificWorks" <${this.config.get('SMTP_USER')}>`,
+      from: `"EUROCAR" <${this.config.get('SMTP_USER')}>`,
       to,
       subject: 'Şifrə Sıfırlama',
       html: `

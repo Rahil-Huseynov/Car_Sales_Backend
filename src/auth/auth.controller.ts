@@ -87,10 +87,8 @@ export class AuthController {
     @Post('forgot-password')
     forgotPassword(
         @Body() dto: ForgotPasswordDto,
-        @Headers('accept-language') rawLocale: string
     ) {
-        const locale = rawLocale ? rawLocale.split(',')[0].split('-')[0] : 'az';
-        return this.authService.forgotPassword(dto.email, locale);
+        return this.authService.forgotPassword(dto.email);
     }
 
 
