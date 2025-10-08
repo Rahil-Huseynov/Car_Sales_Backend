@@ -81,6 +81,7 @@ export class CarsDataService {
     }
     return this.paginateArray(sortedKeys, page, limit);
   }
+
   getAllValuesSortedPaginated(page = 1, limit = 10, search?: string): PaginatedResult<string> {
     const allValues = Object.values(this.dataObj).flat();
     const unique = Array.from(new Set(allValues));
@@ -106,13 +107,7 @@ export class CarsDataService {
 
     if (search && search.trim() !== '') {
       const matched = sorted.filter((v) => this.matchesSearch(v, search));
-      return {
-        items: matched,
-        totalCount: matched.length,
-        totalPages: 1,
-        page: 1,
-        limit: matched.length,
-      };
+      return this.paginateArray(matched, page, limit);
     }
 
     return this.paginateArray(sorted, page, limit);

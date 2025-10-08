@@ -20,10 +20,10 @@ export class CarsDataController {
   }
 
   @Get('values')
-  getAllValues(@Query('page') page: string, @Query('limit') limit: string,@Query('search') search?: string,) {
+  getAllValues(@Query('page') page: string, @Query('limit') limit: string, @Query('search') search?: string,) {
     const pageNum = page ? parseInt(page) : 1;
     const limitNum = limit ? parseInt(limit) : 10;
-    return this.CarsDataService.getAllValuesSortedPaginated(pageNum, limitNum,search);
+    return this.CarsDataService.getAllValuesSortedPaginated(pageNum, limitNum, search);
   }
 
   @Get('brand/:key')
@@ -31,9 +31,10 @@ export class CarsDataController {
     @Param('key') key: string,
     @Query('page') page: string,
     @Query('limit') limit: string,
+    @Query('search') search?: string,
   ) {
     const pageNum = page ? parseInt(page) : 1;
     const limitNum = limit ? parseInt(limit) : 10;
-    return this.CarsDataService.getValuesByKeyPaginated(key, pageNum, limitNum);
+    return this.CarsDataService.getValuesByKeyPaginated(key, pageNum, limitNum, search);
   }
 }

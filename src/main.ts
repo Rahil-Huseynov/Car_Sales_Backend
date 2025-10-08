@@ -8,7 +8,7 @@ import rateLimit from 'express-rate-limit';
 import { CACHE_MANAGER, CacheInterceptor } from '@nestjs/cache-manager';
 import * as compression from 'compression';
 import * as express from 'express';
-import { ApiKeyGuard } from './guard/api-key.guard';
+// import { ApiKeyGuard } from './guard/api-key.guard';
 import { ConfigService } from '@nestjs/config';
 // import { CustomCacheInterceptor } from './common/interceptors/custom-cache.interceptor';
 
@@ -20,8 +20,8 @@ async function bootstrap() {
 
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-  const configService = app.get(ConfigService);
-  app.useGlobalGuards(new ApiKeyGuard(configService));
+  // const configService = app.get(ConfigService);
+  // app.useGlobalGuards(new ApiKeyGuard(configService));
 
 
   // app.use(
