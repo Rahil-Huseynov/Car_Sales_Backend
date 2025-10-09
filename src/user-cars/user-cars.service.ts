@@ -260,6 +260,29 @@ export class UserCarsService {
     });
   }
 
+  async getRecentCars() {
+    const cars = await this.prisma.userCars.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      include: { images: true },
+    });
+
+    const normalizeUrl = (u: string | null | undefined) =>
+      !u ? '/placeholder.svg' : String(u).replace(/^\/+/, '');
+
+    return cars.map((car) => ({
+      id: car.id,
+      brand: car.brand,
+      model: car.model,
+      year: car.year,
+      price: car.price,
+      status: car.status,
+      // views: car.views ?? 0,
+      images: (car.images ?? []).map((i) => ({ id: i.id, url: normalizeUrl(i.url) })),
+    }));
+  }
+
+
   async deleteUserCar(id: number) {
     const userCar = await this.prisma.userCars.findUnique({
       where: { id },

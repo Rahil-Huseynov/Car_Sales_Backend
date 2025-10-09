@@ -4,11 +4,11 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { AdminSeederModule } from './admin-seed/admin-seeder.module';
-// import { OriginCheckMiddleware } from './common/middleware/origin-check.middleware';
+import { OriginCheckMiddleware } from './common/middleware/origin-check.middleware';
 import { join } from 'path';
 import { LogsModule } from './logspage/logs.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-// import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
+import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CacheModule } from '@nestjs/cache-manager';
 import { UserCarsModule } from './user-cars/user-cars.module';
@@ -16,20 +16,21 @@ import { CarImagesModule } from './car-images/car-images.module';
 import { CarsModule } from './cars/cars.module';
 import { MailModule } from './mailer/mailer.module';
 import { CarsDataModule } from './CarsData/CarsData.module';
-// import { CustomCacheInterceptor } from './common/interceptors/custom-cache.interceptor';
+import { CustomCacheInterceptor } from './common/interceptors/custom-cache.interceptor';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   providers: [
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: HttpLoggingInterceptor,
-    // },
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: CustomCacheInterceptor,
-    // },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: HttpLoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CustomCacheInterceptor,
+    },
   ],
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, CarsDataModule ,MailModule, CarsModule, LogsModule, UserModule, AdminSeederModule, PrismaModule, UserCarsModule, CarImagesModule,
+  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, StatsModule, CarsDataModule ,MailModule, CarsModule, LogsModule, UserModule, AdminSeederModule, PrismaModule, UserCarsModule, CarImagesModule,
   ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'uploads'),
     serveRoot: '/uploads',
@@ -41,9 +42,9 @@ import { CarsDataModule } from './CarsData/CarsData.module';
   ],
 })
 export class AppModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer
-  //     .apply(OriginCheckMiddleware)
-  //   .forRoutes({ path: '*', method: RequestMethod.ALL });
-  // }
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(OriginCheckMiddleware)
+    .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
 }

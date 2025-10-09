@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Controller, Get, Param, Body, Post, Put, Delete, BadRequestException } from '@nestjs/common';
 import { UserCarsService } from './user-cars.service';
 
 @Controller('user-cars')
@@ -15,9 +15,16 @@ export class UserCarsController {
     return this.userCarsService.getAllUserCars();
   }
 
+  @Get('recent')
+  async getRecent() {
+    return this.userCarsService.getRecentCars();
+  }
+
   @Get(':id')
   async getById(@Param('id') id: string) {
-    return this.userCarsService.getUserCarById(Number(id));
+    const carId = Number(id);
+    if (Number.isNaN(carId)) throw new BadRequestException('Invalid car id');
+    return this.userCarsService.getUserCarById(carId);
   }
 
   @Put(':id')

@@ -165,13 +165,23 @@ export class AuthService {
   }
 
 
+  async getAllUsers(page = 1, limit = 10, search?: string) {
+    const skip = (page - 1) * limit;
 
-
-  async getAllUsers(page = 1, limit = 10) {
-    const skip = (page - 1) * limit
+    const where = search
+      ? {
+        OR: [
+          { firstName: { contains: search, mode: "insensitive" } },
+          { lastName: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
+          { phoneNumber: { contains: search, mode: "insensitive" } },
+        ],
+      }
+      : {};
 
     const [users, totalCount] = await this.prisma.$transaction([
       this.prisma.user.findMany({
+        where: where as any,
         skip,
         take: limit,
         orderBy: {
@@ -186,20 +196,23 @@ export class AuthService {
           phoneNumber: true,
           phoneCode: true,
           role: true,
+          userCars: true,
         },
       }),
-      this.prisma.user.count(),
-    ])
+      this.prisma.user.count({ where: where as any }),
+    ]);
 
-    const totalPages = Math.ceil(totalCount / limit)
+    const totalPages = Math.ceil(totalCount / limit);
 
     return {
       users,
       totalCount,
       totalPages,
       currentPage: page,
-    }
+    };
   }
+
+
 
   async getAllAdmins(page = 1, limit = 10, search = "") {
     const skip = (page - 1) * limit;
@@ -235,6 +248,30 @@ export class AuthService {
       totalPages: Math.ceil(total / limit),
     };
   }
+
+  async getRecentUsers(limit = 5) {
+    const users = await this.prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    return users.map(u => ({
+      id: u.id,
+      name: `${u.firstName} ${u.lastName}`,
+      email: u.email,
+      role: u.role,
+      joinDate: u.createdAt.toISOString().split('T')[0], 
+    }));
+  }
+
 
   async updateAdmin(id: number, dto: Partial<RegisterAdminAuthDto>) {
     const admin = await this.prisma.admin.findUnique({ where: { id } });
@@ -340,6 +377,7 @@ export class AuthService {
         phoneNumber: true,
         phoneCode: true,
         createdAt: true,
+        userCars: true
       },
     });
 

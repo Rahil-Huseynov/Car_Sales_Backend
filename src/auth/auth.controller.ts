@@ -37,10 +37,18 @@ export class AuthController {
     getUsers(
         @Query('page') page: string,
         @Query('limit') limit: string,
+        @Query('search') search?: string,
+
     ) {
         const pageNumber = parseInt(page) || 1
         const pageSize = parseInt(limit) || 10
-        return this.authService.getAllUsers(pageNumber, pageSize)
+        return this.authService.getAllUsers(pageNumber, pageSize, search)
+    }
+
+    @UseGuards(AuthGuard('jwt'), AdminGuard)
+    @Get('users/recent')
+    async getRecentUsers() {
+        return this.authService.getRecentUsers();
     }
 
     @UseGuards(AuthGuard('jwt'), AdminGuard)
