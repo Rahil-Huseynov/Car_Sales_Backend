@@ -36,4 +36,31 @@ export class UserCarsController {
   async delete(@Param('id') id: string) {
     return this.userCarsService.deleteUserCar(Number(id));
   }
+
+  @Post('all')
+  async createAll(@Body() body: any) {
+    return this.userCarsService.createAllCar(body);
+  }
+
+  @Get('all')
+  async getAllCars() {
+    return this.userCarsService.getAllCars();
+  }
+
+  @Get('all/:id')
+  async getAllCarById(@Param('id') id: string) {
+    const carId = Number(id);
+    if (Number.isNaN(carId)) throw new BadRequestException('Invalid id');
+    return this.userCarsService.getAllCarById(carId);
+  }
+
+  @Put('all/:id')
+  async updateAllCar(@Param('id') id: string, @Body() body: any) {
+    return this.userCarsService.updateAllCar(Number(id), body);
+  }
+
+  @Delete('all/:id')
+  async deleteAllCar(@Param('id') id: string) {
+    return this.userCarsService.deleteAllCar(Number(id));
+  }
 }

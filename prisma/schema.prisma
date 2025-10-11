@@ -51,7 +51,6 @@ model User {
   @@map("users")
 }
 
-
 model UserCars {
   id            Int         @id @default(autoincrement())
   createdAt     DateTime    @default(now())
@@ -64,6 +63,7 @@ model UserCars {
   fuel          String?
   condition     String?
   color         String?
+  viewcount     Int @default(0)
   ban           String?
   location      String?
   engine        String?
@@ -76,7 +76,7 @@ model UserCars {
   user          User         @relation(fields: [userId], references: [id])
 
   allCarsListId Int?         @unique
-  allCar        AllCarsList? @relation("UserCarToAllCar", fields: [allCarsListId], references: [id])
+  allCar        AllCarsList? @relation("UserCarToAllCar", fields: [allCarsListId], references: [id], onDelete: Cascade)
 
   @@map("userJournal")
 }
@@ -93,6 +93,7 @@ model AllCarsList {
   condition String?
   color     String?
   ban       String?
+  viewcount Int @default(0)
   location  String?
   engine    String?
   gearbox   String?
@@ -108,7 +109,6 @@ model AllCarsList {
 
   @@map("allCarsList")
 }
-
 
 model Carimages {
   id        Int          @id @default(autoincrement())

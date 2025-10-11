@@ -91,5 +91,4 @@ export class CarsController {
   async getCarById(@Param('id', ParseIntPipe) id: number) {
     return this.carsService.getCarById(id);
   }
-
 }
