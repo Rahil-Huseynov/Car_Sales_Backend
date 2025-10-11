@@ -24,7 +24,7 @@ export type FilterOptions = {
 
 @Injectable()
 export class CarsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   private getUploadsBase(): string {
     const base =
@@ -44,6 +44,24 @@ export class CarsService {
     return `${base}/${cleaned}`;
   }
 
+  private hasFiltersProvided(filters: FilterOptions) {
+    return !!(
+      (filters.search && String(filters.search).trim() !== '') ||
+      (filters.brand && filters.brand !== 'all') ||
+      (filters.model && filters.model !== 'all') ||
+      (typeof filters.year === 'number' && !Number.isNaN(filters.year)) ||
+      (filters.fuel && filters.fuel !== 'all') ||
+      (filters.location && filters.location !== 'all') ||
+      (filters.ban && filters.ban !== 'all') ||
+      (filters.engine && filters.engine !== 'all') ||
+      (filters.gearbox && filters.gearbox !== 'all') ||
+      (filters.condition && filters.condition !== 'all') ||
+      (filters.color && filters.color !== 'all') ||
+      typeof filters.minPrice === 'number' ||
+      typeof filters.maxPrice === 'number'
+    );
+  }
+
   async getAllCarsFromAllList(
     page = 1,
     limit = 20,
@@ -57,8 +75,12 @@ export class CarsService {
     if (pageNumber <= 0) pageNumber = 1;
 
     const where: any = {};
+    if (filters.status && filters.status !== 'all') {
+      where.status = filters.status;
+    } else {
+      where.status = { not: 'Sold' };
+    }
 
-    if (filters.status && filters.status !== 'all') where.status = filters.status;
     if (filters.brand && filters.brand !== 'all') where.brand = filters.brand;
     if (filters.model && filters.model !== 'all') where.model = filters.model;
     if (filters.fuel && filters.fuel !== 'all') where.fuel = filters.fuel;
@@ -78,39 +100,51 @@ export class CarsService {
 
     if (filters.search && String(filters.search).trim() !== '') {
       const q = String(filters.search).trim();
-      where.OR = [
-        { brand: { contains: q, mode: 'insensitive' } },
-        { model: { contains: q, mode: 'insensitive' } },
-        { location: { contains: q, mode: 'insensitive' } },
-      ];
+      where.AND = where.AND ?? [];
+      where.AND.push({
+        OR: [
+          { brand: { contains: q, mode: 'insensitive' } },
+          { model: { contains: q, mode: 'insensitive' } },
+          { location: { contains: q, mode: 'insensitive' } },
+        ],
+      });
     }
+    const hasFilters = this.hasFiltersProvided(filters);
+    let orderBy: any = undefined;
+    const mapSortToOrder = (sb?: string): any | null => {
+      if (!sb) return null;
+      switch (sb) {
+        case 'price-low':
+        case 'price_asc':
+          return { price: 'asc' };
+        case 'price-high':
+        case 'price_desc':
+          return { price: 'desc' };
+        case 'year-new':
+        case 'year_desc':
+          return { year: 'desc' };
+        case 'year-old':
+        case 'year_asc':
+          return { year: 'asc' };
+        case 'mileage-low':
+          return { mileage: 'asc' };
+        case 'mileage-high':
+          return { mileage: 'desc' };
+        default:
+          return null;
+      }
+    };
 
-    let orderBy: any = { createdAt: 'desc' };
-    switch (filters.sortBy) {
-      case 'price-low':
-      case 'price_asc':
-        orderBy = { price: 'asc' };
-        break;
-      case 'price-high':
-      case 'price_desc':
-        orderBy = { price: 'desc' };
-        break;
-      case 'year-new':
-      case 'year_desc':
-        orderBy = { year: 'desc' };
-        break;
-      case 'year-old':
-      case 'year_asc':
-        orderBy = { year: 'asc' };
-        break;
-      case 'mileage-low':
-        orderBy = { mileage: 'asc' };
-        break;
-      case 'mileage-high':
-        orderBy = { mileage: 'desc' };
-        break;
-      default:
-        orderBy = { createdAt: 'desc' };
+    const secondaryOrder = mapSortToOrder(filters.sortBy);
+
+    if (!hasFilters) {
+      orderBy = secondaryOrder ? [{ createdAt: 'desc' }, secondaryOrder] : [{ createdAt: 'desc' }];
+    } else {
+      if (secondaryOrder) {
+        orderBy = [secondaryOrder];
+      } else {
+        orderBy = undefined;
+      }
     }
 
     const skip = (pageNumber - 1) * limitNumber;
@@ -120,7 +154,7 @@ export class CarsService {
         where,
         skip,
         take: limitNumber,
-        orderBy,
+        ...(orderBy ? { orderBy } : {}),
         include: { images: true, user: true },
       }),
       this.prisma.allCarsList.count({ where }),
@@ -151,13 +185,13 @@ export class CarsService {
       createdAt: car.createdAt,
       user: car.user
         ? {
-            id: car.user.id,
-            firstName: car.user.firstName,
-            lastName: car.user.lastName,
-            email: car.user.email,
-            phoneNumber: car.user.phoneNumber,
-            phoneCode: car.user.phoneCode,
-          }
+          id: car.user.id,
+          firstName: car.user.firstName,
+          lastName: car.user.lastName,
+          email: car.user.email,
+          phoneNumber: car.user.phoneNumber,
+          phoneCode: car.user.phoneCode,
+        }
         : null,
       images:
         car.images?.map((img: any) => ({
@@ -206,21 +240,39 @@ export class CarsService {
     }
 
     if (filters.search) {
-      where.OR = [
-        { brand: { contains: filters.search, mode: 'insensitive' } },
-        { model: { contains: filters.search, mode: 'insensitive' } },
-        { location: { contains: filters.search, mode: 'insensitive' } },
-      ];
+      where.AND = where.AND ?? [];
+      where.AND.push({
+        OR: [
+          { brand: { contains: filters.search, mode: 'insensitive' } },
+          { model: { contains: filters.search, mode: 'insensitive' } },
+          { location: { contains: filters.search, mode: 'insensitive' } },
+        ],
+      });
     }
 
-    let orderBy: any = { createdAt: 'desc' };
-    switch (filters.sortBy) {
-      case 'price-low': orderBy = { price: 'asc' }; break;
-      case 'price-high': orderBy = { price: 'desc' }; break;
-      case 'year-new': orderBy = { year: 'desc' }; break;
-      case 'year-old': orderBy = { year: 'asc' }; break;
-      case 'mileage-low': orderBy = { mileage: 'asc' }; break;
-      case 'mileage-high': orderBy = { mileage: 'desc' }; break;
+    const hasFilters = this.hasFiltersProvided(filters);
+
+    const mapSortToOrder = (sb?: string): any | null => {
+      if (!sb) return null;
+      switch (sb) {
+        case 'price-low': return { price: 'asc' };
+        case 'price-high': return { price: 'desc' };
+        case 'year-new': return { year: 'desc' };
+        case 'year-old': return { year: 'asc' };
+        case 'mileage-low': return { mileage: 'asc' };
+        case 'mileage-high': return { mileage: 'desc' };
+        default: return null;
+      }
+    };
+
+    const secondaryOrder = mapSortToOrder(filters.sortBy);
+
+    let orderBy: any = undefined;
+    if (!hasFilters) {
+      orderBy = secondaryOrder ? [{ createdAt: 'desc' }, secondaryOrder] : [{ createdAt: 'desc' }];
+    } else {
+      if (secondaryOrder) orderBy = [secondaryOrder];
+      else orderBy = undefined;
     }
 
     const [cars, totalCount] = await this.prisma.$transaction([
@@ -228,7 +280,7 @@ export class CarsService {
         where,
         skip: (pageNumber - 1) * limitNumber,
         take: limitNumber,
-        orderBy,
+        ...(orderBy ? { orderBy } : {}),
         include: {
           images: true,
           user: true,
@@ -286,13 +338,13 @@ export class CarsService {
           viewcount: updated.viewcount,
           user: updated.user
             ? {
-                id: updated.user.id,
-                firstName: updated.user.firstName,
-                lastName: updated.user.lastName,
-                email: updated.user.email,
-                phoneNumber: updated.user.phoneNumber,
-                phoneCode: updated.user.phoneCode,
-              }
+              id: updated.user.id,
+              firstName: updated.user.firstName,
+              lastName: updated.user.lastName,
+              email: updated.user.email,
+              phoneNumber: updated.user.phoneNumber,
+              phoneCode: updated.user.phoneCode,
+            }
             : null,
           images:
             updated.images?.map((img: any) => ({
@@ -328,13 +380,13 @@ export class CarsService {
           viewcount: updated.viewcount,
           user: updated.user
             ? {
-                id: updated.user.id,
-                firstName: updated.user.firstName,
-                lastName: updated.user.lastName,
-                email: updated.user.email,
-                phoneNumber: updated.user.phoneNumber,
-                phoneCode: updated.user.phoneCode,
-              }
+              id: updated.user.id,
+              firstName: updated.user.firstName,
+              lastName: updated.user.lastName,
+              email: updated.user.email,
+              phoneNumber: updated.user.phoneNumber,
+              phoneCode: updated.user.phoneCode,
+            }
             : null,
           images:
             updated.images?.map((img: any) => ({
@@ -385,13 +437,13 @@ export class CarsService {
           viewcount: updated.viewcount,
           user: updated.user
             ? {
-                id: updated.user.id,
-                firstName: updated.user.firstName,
-                lastName: updated.user.lastName,
-                email: updated.user.email,
-                phoneNumber: updated.user.phoneNumber,
-                phoneCode: updated.user.phoneCode,
-              }
+              id: updated.user.id,
+              firstName: updated.user.firstName,
+              lastName: updated.user.lastName,
+              email: updated.user.email,
+              phoneNumber: updated.user.phoneNumber,
+              phoneCode: updated.user.phoneCode,
+            }
             : null,
           images:
             updated.images?.map((img: any) => ({
@@ -430,13 +482,13 @@ export class CarsService {
           viewcount: updated.viewcount,
           user: updated.user
             ? {
-                id: updated.user.id,
-                firstName: updated.user.firstName,
-                lastName: updated.user.lastName,
-                email: updated.user.email,
-                phoneNumber: updated.user.phoneNumber,
-                phoneCode: updated.user.phoneCode,
-              }
+              id: updated.user.id,
+              firstName: updated.user.firstName,
+              lastName: updated.user.lastName,
+              email: updated.user.email,
+              phoneNumber: updated.user.phoneNumber,
+              phoneCode: updated.user.phoneCode,
+            }
             : null,
           images:
             updated.images?.map((img: any) => ({

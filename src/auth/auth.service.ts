@@ -110,6 +110,7 @@ export class AuthService {
         color: car.color,
         location: car.location,
         city: car.city,
+        status: car.status,
         description: car.description,
         features: car.features,
         name: car.name,

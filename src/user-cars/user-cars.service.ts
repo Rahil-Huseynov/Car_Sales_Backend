@@ -295,13 +295,12 @@ export class UserCarsService {
 
     const ops: Prisma.PrismaPromise<any>[] = [];
     ops.push(this.prisma.carimages.deleteMany({ where: { userCarId: id } }));
-
     if (userCar.allCar) {
       ops.push(this.prisma.carimages.deleteMany({ where: { allCarId: userCar.allCar.id } }));
-      ops.push(this.prisma.allCarsList.delete({ where: { id: userCar.allCar.id } }));
+      ops.push(this.prisma.allCarsList.deleteMany({ where: { id: userCar.allCar.id } }));
     }
 
-    ops.push(this.prisma.userCars.delete({ where: { id } }));
+    ops.push(this.prisma.userCars.deleteMany({ where: { id } }));
 
     const results = await this.prisma.$transaction(ops);
     return results[results.length - 1];
@@ -486,9 +485,9 @@ export class UserCarsService {
     ops.push(this.prisma.carimages.deleteMany({ where: { allCarId: id } }));
     if (allCar.userCar) {
       ops.push(this.prisma.carimages.deleteMany({ where: { userCarId: allCar.userCar.id } }));
-      ops.push(this.prisma.userCars.delete({ where: { id: allCar.userCar.id } }));
+      ops.push(this.prisma.userCars.deleteMany({ where: { id: allCar.userCar.id } }));
     }
-    ops.push(this.prisma.allCarsList.delete({ where: { id } }));
+    ops.push(this.prisma.allCarsList.deleteMany({ where: { id } }));
 
     const results = await this.prisma.$transaction(ops);
     return results[results.length - 1];
