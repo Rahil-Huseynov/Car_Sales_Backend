@@ -47,8 +47,18 @@ model User {
   userCars            UserCars[]
   passwordResetTokens PasswordResetToken[]
   AllCarsList         AllCarsList[]
-
+  favorites           Favorite[]
   @@map("users")
+}
+
+model Favorite {
+  id         Int          @id @default(autoincrement())
+  userId     Int
+  carId      Int
+  createdAt  DateTime     @default(now())
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  car        AllCarsList  @relation(fields: [carId], references: [id], onDelete: Cascade)
+  @@unique([userId, carId])
 }
 
 model UserCars {
@@ -74,7 +84,6 @@ model UserCars {
   images        Carimages[]  @relation("UserCarImages")
   userId        Int
   user          User         @relation(fields: [userId], references: [id])
-
   allCarsListId Int?         @unique
   allCar        AllCarsList? @relation("UserCarToAllCar", fields: [allCarsListId], references: [id], onDelete: Cascade)
 
@@ -103,7 +112,7 @@ model AllCarsList {
   images    Carimages[] @relation("AllCarImages")
 
   userCar   UserCars? @relation("UserCarToAllCar")
-
+  favorites Favorite[]
   userId   Int?
   user     User?      @relation(fields: [userId], references: [id])
 

@@ -36,6 +36,7 @@ CREATE TABLE "users" (
     "firstName" TEXT,
     "lastName" TEXT,
     "role" TEXT,
+    "phoneCode" TEXT,
     "phoneNumber" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -54,20 +55,16 @@ CREATE TABLE "userJournal" (
     "price" INTEGER NOT NULL,
     "mileage" INTEGER NOT NULL,
     "fuel" TEXT,
-    "transmission" TEXT,
     "condition" TEXT,
     "color" TEXT,
+    "viewcount" INTEGER NOT NULL DEFAULT 0,
     "ban" TEXT,
     "location" TEXT,
     "engine" TEXT,
     "gearbox" TEXT,
-    "city" TEXT,
     "description" TEXT,
     "features" TEXT[],
-    "name" TEXT,
-    "phone" TEXT,
     "status" TEXT,
-    "email" TEXT,
     "userId" INTEGER NOT NULL,
     "allCarsListId" INTEGER,
 
@@ -84,19 +81,15 @@ CREATE TABLE "allCarsList" (
     "price" INTEGER NOT NULL,
     "mileage" INTEGER NOT NULL,
     "fuel" TEXT,
-    "transmission" TEXT,
     "condition" TEXT,
     "color" TEXT,
     "ban" TEXT,
+    "viewcount" INTEGER NOT NULL DEFAULT 0,
     "location" TEXT,
     "engine" TEXT,
     "gearbox" TEXT,
-    "city" TEXT,
     "description" TEXT,
     "features" TEXT[],
-    "name" TEXT,
-    "phone" TEXT,
-    "email" TEXT,
     "status" TEXT,
     "userId" INTEGER,
 
@@ -136,7 +129,7 @@ CREATE UNIQUE INDEX "userJournal_allCarsListId_key" ON "userJournal"("allCarsLis
 ALTER TABLE "userJournal" ADD CONSTRAINT "userJournal_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "userJournal" ADD CONSTRAINT "userJournal_allCarsListId_fkey" FOREIGN KEY ("allCarsListId") REFERENCES "allCarsList"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "userJournal" ADD CONSTRAINT "userJournal_allCarsListId_fkey" FOREIGN KEY ("allCarsListId") REFERENCES "allCarsList"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "allCarsList" ADD CONSTRAINT "allCarsList_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
