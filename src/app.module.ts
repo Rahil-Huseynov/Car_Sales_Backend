@@ -18,6 +18,7 @@ import { MailModule } from './mailer/mailer.module';
 import { CarsDataModule } from './CarsData/CarsData.module';
 import { CustomCacheInterceptor } from './common/interceptors/custom-cache.interceptor';
 import { StatsModule } from './stats/stats.module';
+import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
   providers: [
@@ -30,7 +31,7 @@ import { StatsModule } from './stats/stats.module';
       useClass: CustomCacheInterceptor,
     },
   ],
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, StatsModule, CarsDataModule ,MailModule, CarsModule, LogsModule, UserModule, AdminSeederModule, PrismaModule, UserCarsModule, CarImagesModule,
+  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, FavoritesModule ,StatsModule, CarsDataModule ,MailModule, CarsModule, LogsModule, UserModule, AdminSeederModule, PrismaModule, UserCarsModule, CarImagesModule,
   ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'uploads'),
     serveRoot: '/uploads',
