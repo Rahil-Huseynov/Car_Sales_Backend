@@ -68,7 +68,7 @@ async function bootstrap() {
   app.enableCors({
     origin: (origin, callback) => {
       const allowedOrigins = [
-        // 'https://my-project-rahil.netlify.app',
+        'https://eurocar-rahil.netlify.app/',
         'http://localhost:3000',
       ];
       if (!origin || allowedOrigins.includes(origin)) {
