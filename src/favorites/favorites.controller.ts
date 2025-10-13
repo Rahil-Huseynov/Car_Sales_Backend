@@ -4,13 +4,13 @@ import { Request } from 'express';
 import { JwtGuard } from 'src/auth/guard';
 
 interface AuthenticatedRequest extends Request {
-  user: { id: number }; 
+  user: { id: number };
 }
 
 @Controller('favorites')
 @UseGuards(JwtGuard)
 export class FavoritesController {
-  constructor(private readonly favoritesService: FavoritesService) {}
+  constructor(private readonly favoritesService: FavoritesService) { }
 
   @Post(':carId')
   async addFavorite(@Req() req: AuthenticatedRequest, @Param('carId') carId: string) {
@@ -18,10 +18,11 @@ export class FavoritesController {
     return this.favoritesService.addFavorite(userId, parseInt(carId));
   }
 
-  @Delete(':carId')
-  async removeFavorite(@Req() req: AuthenticatedRequest, @Param('carId') carId: string) {
+  @Delete(':id')
+  async removeFavorite(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     const userId = req.user.id;
-    return this.favoritesService.removeFavorite(userId, parseInt(carId));
+    const favoriteId = parseInt(id);
+    return this.favoritesService.removeFavorite(userId, favoriteId);
   }
 
   @Get()
