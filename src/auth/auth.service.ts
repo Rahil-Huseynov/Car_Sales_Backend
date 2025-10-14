@@ -110,6 +110,8 @@ export class AuthService {
         color: car.color,
         location: car.location,
         city: car.city,
+        gearbox: car.gearbox,
+        viewcount: car.viewcount,
         status: car.status,
         description: car.description,
         features: car.features,
@@ -269,7 +271,7 @@ export class AuthService {
       name: `${u.firstName} ${u.lastName}`,
       email: u.email,
       role: u.role,
-      joinDate: u.createdAt.toISOString().split('T')[0], 
+      joinDate: u.createdAt.toISOString().split('T')[0],
     }));
   }
 
