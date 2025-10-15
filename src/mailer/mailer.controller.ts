@@ -1,17 +1,44 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { MailerService } from './mailer.service';
+import { Controller, Post, HttpException, HttpStatus, Body } from "@nestjs/common"
+import { MailerService } from "./mailer.service"
+import { SendEmailDto } from "./dto/send-email.dto"
 
-@Controller('send-email')
+@Controller("api/send-email")
 export class MailerController {
     constructor(private readonly mailerService: MailerService) { }
 
     @Post()
-    async sendEmail(@Body() body: { to: string; subject: string; text: string }) {
+    async sendEmail(@Body() body: SendEmailDto) {
+        console.log("📨 BACKEND ALDI:", body);
+
         try {
-            await this.mailerService.sendMail(body.to, body.subject, body.text);
-            return { message: 'Email uğurla göndərildi' };
+            if (body.carTitle && body.from && body.message) {
+                await this.mailerService.sendCarInquiry({
+                    to: body.to,
+                    carTitle: body.carTitle,
+                    name: body.name,
+                    sellerName: body.sellerName,
+                    from: body.from,
+                    phone: body.phone,
+                    message: body.message,
+                })
+            } else {
+                await this.mailerService.sendMail(body.to, body.subject, body.message)
+            }
+
+            return {
+                success: true,
+                message: "Email uğurla göndərildi 🚀"
+            }
         } catch (error) {
-            return { message: 'Xəta baş verdi', error: error.message };
+            console.error("❌ EMAIL ERROR:", error);
+            throw new HttpException(
+                {
+                    success: false,
+                    message: "Email göndərilməsində xəta",
+                    error: error.message,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            )
         }
     }
 }
