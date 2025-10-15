@@ -14,6 +14,8 @@ export type FilterOptions = {
   gearbox?: string;
   condition?: string;
   color?: string;
+  SaleType?: string;
+  vinCode?: string;
   viewcount?: number;
   minPrice?: number;
   maxPrice?: number;
@@ -57,6 +59,9 @@ export class CarsService {
       (filters.gearbox && filters.gearbox !== 'all') ||
       (filters.condition && filters.condition !== 'all') ||
       (filters.color && filters.color !== 'all') ||
+      (filters.SaleType && filters.SaleType !== 'all') ||
+      (filters.vinCode && filters.vinCode !== 'all') ||
+
       typeof filters.minPrice === 'number' ||
       typeof filters.maxPrice === 'number'
     );
@@ -90,6 +95,9 @@ export class CarsService {
     if (filters.gearbox && filters.gearbox !== 'all') where.gearbox = filters.gearbox;
     if (filters.condition && filters.condition !== 'all') where.condition = filters.condition;
     if (filters.color && filters.color !== 'all') where.color = filters.color;
+    if (filters.SaleType && filters.SaleType !== 'all') where.SaleType = filters.SaleType;
+    if (filters.vinCode && filters.vinCode !== 'all') where.vinCode = filters.vinCode;
+
     if (typeof filters.year === 'number' && !Number.isNaN(filters.year)) where.year = filters.year;
 
     if (typeof filters.minPrice === 'number' || typeof filters.maxPrice === 'number') {
@@ -170,6 +178,8 @@ export class CarsService {
       fuel: car.fuel,
       condition: car.condition,
       color: car.color,
+      SaleType: car.SaleType,
+      vinCode: car.vinCode,
       viewcount: car.viewcount,
       location: car.location,
       ban: car.ban,
@@ -231,8 +241,9 @@ export class CarsService {
     if (filters.gearbox && filters.gearbox !== 'all') where.gearbox = filters.gearbox;
     if (filters.condition && filters.condition !== 'all') where.condition = filters.condition;
     if (filters.color && filters.color !== 'all') where.color = filters.color;
+    if (filters.SaleType && filters.SaleType !== 'all') where.SaleType = filters.SaleType;
+    if (filters.vinCode && filters.vinCode !== 'all') where.vinCode = filters.vinCode;
     if (typeof filters.year === 'number' && !Number.isNaN(filters.year)) where.year = filters.year;
-
     if (typeof filters.minPrice === 'number' || typeof filters.maxPrice === 'number') {
       where.price = {};
       if (typeof filters.minPrice === 'number') where.price.gte = filters.minPrice;
@@ -330,6 +341,8 @@ export class CarsService {
           gearbox: updated.gearbox,
           condition: updated.condition,
           color: updated.color,
+          SaleType: updated.SaleType,
+          vinCode: updated.vinCode,
           location: updated.location,
           description: updated.description,
           features: updated.features ?? [],
@@ -372,6 +385,8 @@ export class CarsService {
           gearbox: updated.gearbox,
           condition: updated.condition,
           color: updated.color,
+          SaleType: updated.SaleType,
+          vinCode: updated.vinCode,
           location: updated.location,
           description: updated.description,
           features: updated.features ?? [],
@@ -429,6 +444,8 @@ export class CarsService {
           gearbox: updated.gearbox,
           condition: updated.condition,
           color: updated.color,
+          SaleType: updated.SaleType,
+          vinCode: updated.vinCode,
           location: updated.location,
           description: updated.description,
           features: updated.features ?? [],
@@ -474,6 +491,8 @@ export class CarsService {
           gearbox: updated.gearbox,
           condition: updated.condition,
           color: updated.color,
+          SaleType: updated.SaleType,
+          vinCode: updated.vinCode,
           location: updated.location,
           description: updated.description,
           features: updated.features ?? [],

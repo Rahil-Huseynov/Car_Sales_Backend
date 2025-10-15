@@ -17,8 +17,8 @@ export class UserCarsService {
     const imagesUrls: string[] | undefined = Array.isArray(data.imagesUrls)
       ? data.imagesUrls
       : typeof data.imagesUrls === 'string' && data.imagesUrls.length
-      ? [data.imagesUrls]
-      : undefined;
+        ? [data.imagesUrls]
+        : undefined;
 
     const result = await this.prisma.$transaction(async (tx) => {
       const createdUserCar = await tx.userCars.create({
@@ -35,6 +35,8 @@ export class UserCarsService {
           ban: data.ban,
           viewcount: data.viewcount ?? 0,
           engine: data.engine,
+          SaleType: data.SaleType,
+          vinCode: data.vinCode,
           gearbox: data.gearbox,
           description: data.description,
           features: data.features ?? [],
@@ -55,6 +57,8 @@ export class UserCarsService {
           fuel: createdUserCar.fuel,
           condition: createdUserCar.condition,
           color: createdUserCar.color,
+          SaleType: createdUserCar.SaleType,
+          vinCode: createdUserCar.vinCode,
           location: createdUserCar.location,
           ban: createdUserCar.ban,
           viewcount: createdUserCar.viewcount ?? 0,
@@ -120,6 +124,8 @@ export class UserCarsService {
         fuel: updatedUserCar.fuel,
         condition: updatedUserCar.condition,
         color: updatedUserCar.color,
+        SaleType: updatedUserCar.SaleType,
+        vinCode: updatedUserCar.vinCode,
         viewcount: updatedUserCar.viewcount,
         ban: updatedUserCar.ban,
         location: updatedUserCar.location,
@@ -158,6 +164,8 @@ export class UserCarsService {
         fuel: updatedUserCar.fuel,
         condition: updatedUserCar.condition,
         color: updatedUserCar.color,
+        SaleType: updatedUserCar.SaleType,
+        vinCode: updatedUserCar.vinCode,
         viewcount: updatedUserCar.viewcount,
         ban: updatedUserCar.ban,
         location: updatedUserCar.location,
@@ -183,8 +191,8 @@ export class UserCarsService {
     if (!userCar) throw new BadRequestException('UserCar not found');
 
     const allowedFields = [
-      'brand', 'model', 'year', 'price', 'mileage', 'fuel', 'condition', 'color',
-      'location', 'ban', 'engine', 'gearbox', 'description', 'features',
+      'brand', 'model', 'year', 'price', 'mileage', 'fuel', 'condition', 'color', 'SaleType',
+      'vinCode', 'location', 'ban', 'engine', 'gearbox', 'description', 'features',
       'name', 'phone', 'phoneCode', 'status', 'email', 'userId',
     ];
 
@@ -325,6 +333,8 @@ export class UserCarsService {
             fuel: data.fuel,
             condition: data.condition,
             color: data.color,
+            SaleType: data.SaleType,
+            vinCode: data.vinCode,
             viewcount: data.viewcount ?? 0,
             location: data.location,
             ban: data.ban,
@@ -349,6 +359,8 @@ export class UserCarsService {
             fuel: createdAll.fuel,
             condition: createdAll.condition,
             color: createdAll.color,
+            SaleType: createdAll.SaleType,
+            vinCode: createdAll.vinCode,
             viewcount: createdAll.viewcount ?? 0,
             location: createdAll.location,
             ban: createdAll.ban,
@@ -377,6 +389,8 @@ export class UserCarsService {
           fuel: data.fuel,
           condition: data.condition,
           color: data.color,
+          SaleType: data.SaleType,
+          vinCode: data.vinCode,
           viewcount: data.viewcount ?? 0,
           location: data.location,
           ban: data.ban,
@@ -406,7 +420,7 @@ export class UserCarsService {
     const allCar = await this.prisma.allCarsList.findUnique({ where: { id }, include: { images: true, userCar: true } });
     if (!allCar) throw new BadRequestException('AllCar not found');
 
-    const allowed = ['brand', 'model', 'year', 'price', 'mileage', 'fuel', 'condition', 'color', 'location', 'ban', 'engine', 'gearbox', 'description', 'features', 'status', 'userId'];
+    const allowed = ['brand', 'model', 'year', 'price', 'mileage', 'fuel', 'condition', 'color','SaleType','vinCode', 'location', 'ban', 'engine', 'gearbox', 'description', 'features', 'status', 'userId'];
     const updatePayload: any = {};
     for (const k of allowed) {
       if (Object.prototype.hasOwnProperty.call(data, k)) {

@@ -81,6 +81,8 @@ model UserCars {
   description   String?
   features      String[]
   status        String?
+  SaleType      String?
+  vinCode       String?
   images        Carimages[]  @relation("UserCarImages")
   userId        Int
   user          User         @relation(fields: [userId], references: [id])
@@ -109,6 +111,8 @@ model AllCarsList {
   description String?
   features  String[]
   status    String?
+  SaleType      String?
+  vinCode       String?
   images    Carimages[] @relation("AllCarImages")
 
   userCar   UserCars? @relation("UserCarToAllCar")

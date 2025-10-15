@@ -511,10 +511,68 @@ export class AuthService {
       to,
       subject: 'Şifrə Sıfırlama',
       html: `
-        <h2>Şifrə sıfırlama linki</h2>
-        <p style="margin-bottom: 2rem;">Aşağıdakı linkə klikləyərək yeni şifrə təyin edə bilərsiniz:</p>
-        <a style="background-color: blue; text-decoration: none; color: white; margin: 1rem 0; padding: 1rem; border-radius: 20px; font-weight: 800;" href="${resetUrl}">Şifrəni dəyişmək üçün bura klik edin</a>
-        <p style="margin-top: 2rem; font-weight: 800;">QEYD: Link 1 saat etibarlıdır.</p>
+      
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f5f5f5;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+           <tr>
+            <td style="padding: 48px 40px 32px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px 16px 0 0;">
+              <!-- Replaced SVG with emoji icon for email client compatibility -->
+              <div style="width: 64px; height: 64px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; margin: 0 auto 20px; line-height: 64px; font-size: 32px;">
+                🔒
+              </div>
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; line-height: 1.3;">Password Reset</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <p style="margin: 0 0 24px; color: #374151; font-size: 16px; line-height: 1.6;">
+                Hello,
+              </p>
+              <p style="margin: 0 0 32px; color: #374151; font-size: 16px; line-height: 1.6;">
+                We received a request to reset your password. Click the button below to set a new password:
+              </p>
+              <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td align="center" style="padding: 0;">
+                    <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                      Reset Password
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 40px 40px;">
+              <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px 20px; border-radius: 8px;">
+                <p style="margin: 0; color: #92400e; font-size: 14px; font-weight: 600; line-height: 1.6;">
+                  ⚠️ Important: This link is valid for 1 hour only.
+                </p>
+              </div>
+              
+              <p style="margin: 24px 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
+                If you didn't request this password reset, please ignore this email. Your password will remain unchanged.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 32px 40px; background-color: #f9fafb; border-radius: 0 0 16px 16px; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0; color: #9ca3af; font-size: 13px; text-align: center; line-height: 1.6;">
+                This is an automated message, please do not reply.
+              </p>
+              <p style="margin: 12px 0 0; color: #9ca3af; font-size: 13px; text-align: center; line-height: 1.6;">
+                © 2025 All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
       `,
     });
   }
