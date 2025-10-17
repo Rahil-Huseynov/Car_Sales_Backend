@@ -15,7 +15,6 @@ import { UserCarsModule } from './user-cars/user-cars.module';
 import { CarImagesModule } from './car-images/car-images.module';
 import { CarsModule } from './cars/cars.module';
 import { MailModule } from './mailer/mailer.module';
-import { CarsDataModule } from './CarsData/CarsData.module';
 import { CustomCacheInterceptor } from './common/interceptors/custom-cache.interceptor';
 import { StatsModule } from './stats/stats.module';
 import { FavoritesModule } from './favorites/favorites.module';
@@ -31,7 +30,7 @@ import { FavoritesModule } from './favorites/favorites.module';
       useClass: CustomCacheInterceptor,
     },
   ],
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, FavoritesModule ,StatsModule, CarsDataModule ,MailModule, CarsModule, LogsModule, UserModule, AdminSeederModule, PrismaModule, UserCarsModule, CarImagesModule,
+  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, FavoritesModule, StatsModule, MailModule, CarsModule, LogsModule, UserModule, AdminSeederModule, PrismaModule, UserCarsModule, CarImagesModule,
   ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'uploads'),
     serveRoot: '/uploads',
@@ -46,6 +45,6 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(OriginCheckMiddleware)
-    .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
