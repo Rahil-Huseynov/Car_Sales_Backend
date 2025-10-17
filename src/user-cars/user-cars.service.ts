@@ -225,10 +225,30 @@ export class UserCarsService {
     const ops: Prisma.PrismaPromise<any>[] = [];
 
     if (imagesUrls && imagesUrls.length > 0) {
+      const oldFilenames: string[] = userCar.images.map((i) => i.url).filter(Boolean as any);
+      if (userCar.allCar) {
+        const allCarImages = await this.prisma.carimages.findMany({ where: { allCarId: userCar.allCar.id } });
+        oldFilenames.push(...allCarImages.map((i) => i.url).filter(Boolean as any));
+      }
+      const uniqueOldFilenames = [...new Set(oldFilenames)];
+
+      for (const filename of uniqueOldFilenames) {
+        if (/^https?:\/\//i.test(filename)) continue;
+        const filePath = path.join(this.uploadDir, filename);
+        try {
+          await fs.unlink(filePath);
+        } catch (err: any) {
+          if (err.code !== 'ENOENT') {
+            this.logger.warn(`Failed to delete file ${filePath}: ${err?.message ?? err}`);
+          }
+        }
+      }
+
       ops.push(this.prisma.carimages.deleteMany({ where: { userCarId: id } }));
       if (userCar.allCar) {
         ops.push(this.prisma.carimages.deleteMany({ where: { allCarId: userCar.allCar.id } }));
       }
+
       for (const url of imagesUrls) {
         ops.push(this.prisma.carimages.create({
           data: { url, userCarId: id, allCarId: userCar.allCar ? userCar.allCar.id : undefined },
@@ -446,6 +466,23 @@ export class UserCarsService {
     const ops: Prisma.PrismaPromise<any>[] = [];
 
     if (imagesUrls && imagesUrls.length > 0) {
+      const oldFilenames: string[] = allCar.images.map((i) => i.url).filter(Boolean as any);
+      if (allCar.userCar) {
+        const userCarImages = await this.prisma.carimages.findMany({ where: { userCarId: allCar.userCar.id } });
+        oldFilenames.push(...userCarImages.map((i) => i.url).filter(Boolean as any));
+      }
+      const uniqueOldFilenames = [...new Set(oldFilenames)];
+      for (const filename of uniqueOldFilenames) {
+        if (/^https?:\/\//i.test(filename)) continue;
+        const filePath = path.join(this.uploadDir, filename);
+        try {
+          await fs.unlink(filePath);
+        } catch (err: any) {
+          if (err.code !== 'ENOENT') {
+            this.logger.warn(`Failed to delete file ${filePath}: ${err?.message ?? err}`);
+          }
+        }
+      }
       ops.push(this.prisma.carimages.deleteMany({ where: { allCarId: id } }));
       if (allCar.userCar) {
         ops.push(this.prisma.carimages.deleteMany({ where: { userCarId: allCar.userCar.id } }));
