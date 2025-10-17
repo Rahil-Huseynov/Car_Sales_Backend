@@ -14,7 +14,7 @@ export class MailerService {
     sellerName: string
     message: string
   }) {
-    const subject = `Avtomobil sorğusu: ${data.carTitle}`
+    const subject = `Car Inquiry: ${data.carTitle}`
 
     const html = this.generateCarInquiryTemplate({
       subject,
@@ -65,9 +65,8 @@ export class MailerService {
   <div style="width: 100%; background-color: #f5f5f5; padding: 20px 0;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
       
-      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
-        <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">🚗 Car Sales</h1>
-        <p style="margin: 8px 0 0 0; color: rgba(255, 255, 255, 0.9); font-size: 14px;">The largest car marketplace in Azerbaijan</p>
+      <div style="background: linear-gradient(360deg, #fafafa 0%, #e5e5e5 100%); padding: 40px 30px; text-align: center;">
+        <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;"><img style="width: 130px;" src="https://i.ibb.co/RkLLwNWP/4.png" alt="4"></h1>
       </div>
 
       <div style="padding: 40px 30px; color: #333333; line-height: 1.6;">
@@ -112,9 +111,7 @@ export class MailerService {
       </div>
 
       <div style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
-        <p style="margin: 8px 0; font-size: 14px; color: #6c757d; font-weight: 600;">Car Sales</p>
-        <p style="margin: 8px 0; font-size: 14px; color: #6c757d;">The largest car marketplace in Azerbaijan</p>
-        <p style="font-size: 12px; color: #999; margin-top: 20px;">© ${new Date().getFullYear()} Car Sales. All rights reserved.</p>
+        <p style="font-size: 12px; color: #999; margin-top: 20px;">© ${new Date().getFullYear()} Carify.pl | All rights reserved.</p>
       </div>
     </div>
   </div>

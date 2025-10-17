@@ -521,12 +521,13 @@ export class AuthService {
       <td align="center" style="padding: 40px 20px;">
         <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
            <tr>
-            <td style="padding: 48px 40px 32px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px 16px 0 0;">
+            <td style="padding: 48px 40px 32px; text-align: center; background: linear-gradient(360deg, #fafafa 0%, #e5e5e5 100%); border-radius: 16px 16px 0 0;">
               <!-- Replaced SVG with emoji icon for email client compatibility -->
-              <div style="width: 64px; height: 64px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; margin: 0 auto 20px; line-height: 64px; font-size: 32px;">
-                🔒
-              </div>
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; line-height: 1.3;">Password Reset</h1>
+      <div style="padding: 40px 30px; text-align: center;">
+        <h1 style="margin: 0; color: #000; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;"><img style="width: 130px;" src="https://i.ibb.co/RkLLwNWP/4.png" alt="4"></h1>
+      </div>
+
+              <h1 style="margin: 0; color: #000; font-size: 28px; font-weight: 700; line-height: 1.3;">Password Reset</h1>
             </td>
           </tr>
           <tr>
@@ -567,7 +568,7 @@ export class AuthService {
                 This is an automated message, please do not reply.
               </p>
               <p style="margin: 12px 0 0; color: #9ca3af; font-size: 13px; text-align: center; line-height: 1.6;">
-                © 2025 All rights reserved.
+                © ${new Date().getFullYear()} Carify.pl | All rights reserved
               </p>
             </td>
           </tr>
