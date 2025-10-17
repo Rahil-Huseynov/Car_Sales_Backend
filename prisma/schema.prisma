@@ -44,9 +44,9 @@ model User {
   phoneNumber         String?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
-  userCars            UserCars[]
+  userCars            UserCars[]           @relation("UserToUserCars")
   passwordResetTokens PasswordResetToken[]
-  AllCarsList         AllCarsList[]
+  AllCarsList         AllCarsList[]        @relation("UserToAllCarsList")
   favorites           Favorite[]
   @@map("users")
 }
@@ -85,7 +85,7 @@ model UserCars {
   vinCode       String?
   images        Carimages[]  @relation("UserCarImages")
   userId        Int
-  user          User         @relation(fields: [userId], references: [id])
+  user          User         @relation("UserToUserCars", fields: [userId], references: [id])
   allCarsListId Int?         @unique
   allCar        AllCarsList? @relation("UserCarToAllCar", fields: [allCarsListId], references: [id], onDelete: Cascade)
 
@@ -118,7 +118,7 @@ model AllCarsList {
   userCar   UserCars? @relation("UserCarToAllCar")
   favorites Favorite[]
   userId   Int?
-  user     User?      @relation(fields: [userId], references: [id])
+  user     User?      @relation("UserToAllCarsList", fields: [userId], references: [id])
 
   @@map("allCarsList")
 }
@@ -126,6 +126,7 @@ model AllCarsList {
 model Carimages {
   id        Int          @id @default(autoincrement())
   url       String
+  order     Int      @default(0)
   allCarId  Int?
   allCar    AllCarsList? @relation("AllCarImages", fields: [allCarId], references: [id])
   userCarId Int?

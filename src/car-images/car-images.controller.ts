@@ -12,10 +12,13 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { CarImagesService } from './car-images.service';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import * as sharp from 'sharp';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Controller('car-images')
 export class CarImagesController {
-  constructor(private readonly carImagesService: CarImagesService) {}
+  constructor(private readonly carImagesService: CarImagesService) { }
 
   @Post('upload')
   @UseInterceptors(
@@ -39,8 +42,23 @@ export class CarImagesController {
     @UploadedFiles() files: Express.Multer.File[],
     @Body('userCarId') userCarId: number,
   ) {
-    const urls = files.map((file) => file.filename);
-    return this.carImagesService.addImages(userCarId, urls);
+    const processedFiles: string[] = [];
+
+    for (const file of files) {
+      const outputFilename = `resized-${file.filename}`;
+      const outputPath = path.join('./uploads', outputFilename);
+
+      await sharp(file.path)
+        .resize(1368, 768, { fit: 'inside' }) 
+        .jpeg({ quality: 80 }) 
+        .toFile(outputPath);
+
+      await fs.unlink(file.path);
+
+      processedFiles.push(outputFilename);
+    }
+
+    return this.carImagesService.addImages(userCarId, processedFiles);
   }
 
   @Get(':userCarId')

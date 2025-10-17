@@ -42,9 +42,9 @@ export class UserCarsService {
           features: data.features ?? [],
           status: data.status,
           userId: Number(data.userId),
-          images: imagesUrls ? { create: imagesUrls.map((u) => ({ url: u })) } : undefined,
+          images: imagesUrls ? { create: imagesUrls.map((u, idx) => ({ url: u, order: idx })) } : undefined,
         },
-        include: { images: true },
+        include: { images: { orderBy: { order: 'asc' } } },
       });
 
       const createdAllCar = await tx.allCarsList.create({
@@ -69,9 +69,9 @@ export class UserCarsService {
           status: createdUserCar.status,
           userCar: { connect: { id: createdUserCar.id } },
           userId: createdUserCar.userId,
-          images: imagesUrls ? { create: imagesUrls.map((u) => ({ url: u })) } : undefined,
+          images: imagesUrls ? { create: imagesUrls.map((u, idx) => ({ url: u, order: idx })) } : undefined,
         },
-        include: { images: true },
+        include: { images: { orderBy: { order: 'asc' } } },
       });
 
       await tx.userCars.update({ where: { id: createdUserCar.id }, data: { allCarsListId: createdAllCar.id } });
@@ -84,14 +84,21 @@ export class UserCarsService {
 
   async getAllUserCars() {
     return this.prisma.userCars.findMany({
-      include: { images: true, allCar: { include: { images: true } } },
+      include: { 
+        images: { orderBy: { order: 'asc' } }, 
+        allCar: { include: { images: { orderBy: { order: 'asc' } } } } 
+      },
     });
   }
 
   async getUserCarById(id: number) {
     const car = await this.prisma.userCars.findUnique({
       where: { id },
-      include: { images: true, allCar: { include: { images: true } }, user: true },
+      include: { 
+        images: { orderBy: { order: 'asc' } }, 
+        allCar: { include: { images: { orderBy: { order: 'asc' } } } }, 
+        user: true 
+      },
     });
     if (!car) return null;
     if (car.allCar) {
@@ -99,7 +106,11 @@ export class UserCarsService {
         this.prisma.userCars.update({
           where: { id },
           data: { viewcount: { increment: 1 } },
-          include: { images: true, allCar: { include: { images: true } }, user: true },
+          include: { 
+            images: { orderBy: { order: 'asc' } }, 
+            allCar: { include: { images: { orderBy: { order: 'asc' } } } }, 
+            user: true 
+          },
         }),
         this.prisma.allCarsList.update({
           where: { id: car.allCar.id },
@@ -144,7 +155,11 @@ export class UserCarsService {
       const updatedUserCar = await this.prisma.userCars.update({
         where: { id },
         data: { viewcount: { increment: 1 } },
-        include: { images: true, allCar: { include: { images: true } }, user: true },
+        include: { 
+          images: { orderBy: { order: 'asc' } }, 
+          allCar: { include: { images: { orderBy: { order: 'asc' } } } }, 
+          user: true 
+        },
       });
 
       const normalizeUrl = (u: string | null | undefined) => (!u ? '/placeholder.svg' : String(u).replace(/^\/+/, ''));
@@ -186,7 +201,7 @@ export class UserCarsService {
   async updateUserCar(id: number, data: any) {
     const userCar = await this.prisma.userCars.findUnique({
       where: { id },
-      include: { allCar: true, images: true },
+      include: { allCar: true, images: { orderBy: { order: 'asc' } } },
     });
     if (!userCar) throw new BadRequestException('UserCar not found');
 
@@ -249,11 +264,27 @@ export class UserCarsService {
         ops.push(this.prisma.carimages.deleteMany({ where: { allCarId: userCar.allCar.id } }));
       }
 
-      for (const url of imagesUrls) {
+      for (const [idx, url] of imagesUrls.entries()) {
         ops.push(this.prisma.carimages.create({
-          data: { url, userCarId: id, allCarId: userCar.allCar ? userCar.allCar.id : undefined },
+          data: { url, order: idx, userCarId: id, allCarId: userCar.allCar ? userCar.allCar.id : undefined },
         }));
       }
+    }
+
+    if (data.images && Array.isArray(data.images)) {
+      const imageIds = data.images.map((img: any) => Number(img.id)).filter((id: number) => !Number.isNaN(id));
+      if (imageIds.length !== data.images.length) throw new BadRequestException('Invalid image ids');
+
+      const count = await this.prisma.carimages.count({ where: { userCarId: id, id: { in: imageIds } } });
+      if (count !== imageIds.length) throw new BadRequestException('Images do not belong to this car');
+
+      const imageUpdates = imageIds.map((imgId: number, idx: number) =>
+        this.prisma.carimages.update({
+          where: { id: imgId },
+          data: { order: idx },
+        })
+      );
+      ops.push(...imageUpdates);
     }
 
     if (userCar.allCar) {
@@ -269,18 +300,30 @@ export class UserCarsService {
     }
 
     if (ops.length === 0) {
-      return this.prisma.userCars.findUnique({ where: { id }, include: { images: true, allCar: { include: { images: true } } } });
+      return this.prisma.userCars.findUnique({ 
+        where: { id }, 
+        include: { 
+          images: { orderBy: { order: 'asc' } }, 
+          allCar: { include: { images: { orderBy: { order: 'asc' } } } } 
+        } 
+      });
     }
 
     await this.prisma.$transaction(ops);
-    return this.prisma.userCars.findUnique({ where: { id }, include: { images: true, allCar: { include: { images: true } } } });
+    return this.prisma.userCars.findUnique({ 
+      where: { id }, 
+      include: { 
+        images: { orderBy: { order: 'asc' } }, 
+        allCar: { include: { images: { orderBy: { order: 'asc' } } } } 
+      } 
+    });
   }
 
   async getRecentCars() {
     const cars = await this.prisma.userCars.findMany({
       orderBy: { createdAt: 'desc' },
       take: 5,
-      include: { images: true },
+      include: { images: { orderBy: { order: 'asc' } } },
     });
 
     const normalizeUrl = (u: string | null | undefined) => (!u ? '/placeholder.svg' : String(u).replace(/^\/+/, ''));
@@ -364,9 +407,9 @@ export class UserCarsService {
             features: data.features ?? [],
             status: data.status,
             userId: Number(data.userId),
-            images: imagesUrls ? { create: imagesUrls.map((u) => ({ url: u })) } : undefined,
+            images: imagesUrls ? { create: imagesUrls.map((u, idx) => ({ url: u, order: idx })) } : undefined,
           },
-          include: { images: true },
+          include: { images: { orderBy: { order: 'asc' } } },
         });
 
         const createdUserCar = await tx.userCars.create({
@@ -391,9 +434,9 @@ export class UserCarsService {
             status: createdAll.status,
             userId: createdAll.userId!,
             allCarsListId: createdAll.id,
-            images: imagesUrls ? { create: imagesUrls.map((u) => ({ url: u })) } : undefined,
+            images: imagesUrls ? { create: imagesUrls.map((u, idx) => ({ url: u, order: idx })) } : undefined,
           },
-          include: { images: true },
+          include: { images: { orderBy: { order: 'asc' } } },
         });
 
         return { createdAll, createdUserCar };
@@ -419,9 +462,9 @@ export class UserCarsService {
           description: data.description,
           features: data.features ?? [],
           status: data.status,
-          images: imagesUrls ? { create: imagesUrls.map((u) => ({ url: u })) } : undefined,
+          images: imagesUrls ? { create: imagesUrls.map((u, idx) => ({ url: u, order: idx })) } : undefined,
         },
-        include: { images: true },
+        include: { images: { orderBy: { order: 'asc' } } },
       });
 
       return { createdAll };
@@ -429,15 +472,29 @@ export class UserCarsService {
   }
 
   async getAllCars() {
-    return this.prisma.allCarsList.findMany({ include: { images: true, userCar: { include: { images: true } } } });
+    return this.prisma.allCarsList.findMany({ 
+      include: { 
+        images: { orderBy: { order: 'asc' } }, 
+        userCar: { include: { images: { orderBy: { order: 'asc' } } } } 
+      } 
+    });
   }
 
   async getAllCarById(id: number) {
-    return this.prisma.allCarsList.findUnique({ where: { id }, include: { images: true, userCar: { include: { images: true } } } });
+    return this.prisma.allCarsList.findUnique({ 
+      where: { id }, 
+      include: { 
+        images: { orderBy: { order: 'asc' } }, 
+        userCar: { include: { images: { orderBy: { order: 'asc' } } } } 
+      } 
+    });
   }
 
   async updateAllCar(id: number, data: any) {
-    const allCar = await this.prisma.allCarsList.findUnique({ where: { id }, include: { images: true, userCar: true } });
+    const allCar = await this.prisma.allCarsList.findUnique({ 
+      where: { id }, 
+      include: { images: { orderBy: { order: 'asc' } }, userCar: true } 
+    });
     if (!allCar) throw new BadRequestException('AllCar not found');
 
     const allowed = ['brand', 'model', 'year', 'price', 'mileage', 'fuel', 'condition', 'color','SaleType','vinCode', 'location', 'ban', 'engine', 'gearbox', 'description', 'features', 'status', 'userId'];
@@ -487,9 +544,25 @@ export class UserCarsService {
       if (allCar.userCar) {
         ops.push(this.prisma.carimages.deleteMany({ where: { userCarId: allCar.userCar.id } }));
       }
-      for (const url of imagesUrls) {
-        ops.push(this.prisma.carimages.create({ data: { url, allCarId: id, userCarId: allCar.userCar ? allCar.userCar.id : undefined } }));
+      for (const [idx, url] of imagesUrls.entries()) {
+        ops.push(this.prisma.carimages.create({ data: { url, order: idx, allCarId: id, userCarId: allCar.userCar ? allCar.userCar.id : undefined } }));
       }
+    }
+
+    if (data.images && Array.isArray(data.images)) {
+      const imageIds = data.images.map((img: any) => Number(img.id)).filter((id: number) => !Number.isNaN(id));
+      if (imageIds.length !== data.images.length) throw new BadRequestException('Invalid image ids');
+
+      const count = await this.prisma.carimages.count({ where: { allCarId: id, id: { in: imageIds } } });
+      if (count !== imageIds.length) throw new BadRequestException('Images do not belong to this car');
+
+      const imageUpdates = imageIds.map((imgId: number, idx: number) =>
+        this.prisma.carimages.update({
+          where: { id: imgId },
+          data: { order: idx },
+        })
+      );
+      ops.push(...imageUpdates);
     }
 
     if (Object.keys(updatePayload).length > 0) {
@@ -500,11 +573,23 @@ export class UserCarsService {
     }
 
     if (ops.length === 0) {
-      return this.prisma.allCarsList.findUnique({ where: { id }, include: { images: true, userCar: { include: { images: true } } } });
+      return this.prisma.allCarsList.findUnique({ 
+        where: { id }, 
+        include: { 
+          images: { orderBy: { order: 'asc' } }, 
+          userCar: { include: { images: { orderBy: { order: 'asc' } } } } 
+        } 
+      });
     }
 
     await this.prisma.$transaction(ops);
-    return this.prisma.allCarsList.findUnique({ where: { id }, include: { images: true, userCar: { include: { images: true } } } });
+    return this.prisma.allCarsList.findUnique({ 
+      where: { id }, 
+      include: { 
+        images: { orderBy: { order: 'asc' } }, 
+        userCar: { include: { images: { orderBy: { order: 'asc' } } } } 
+      } 
+    });
   }
 
   async deleteAllCar(id: number) {

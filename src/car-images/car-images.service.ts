@@ -22,12 +22,20 @@ export class CarImagesService {
 
     if (!userCar) throw new BadRequestException('UserCar not found');
 
+    const maxOrderResult = await this.prisma.carimages.aggregate({
+      where: { userCarId: id },
+      _max: { order: true },
+    });
+    const maxOrder = maxOrderResult._max.order ?? -1;
+    const startOrder = maxOrder + 1;
+
     const created: Array<any> = [];
 
-    for (const url of urls) {
+    for (let i = 0; i < urls.length; i++) {
       const record = await this.prisma.carimages.create({
         data: {
-          url,
+          url: urls[i],
+          order: startOrder + i,
           userCarId: id,
           allCarId: userCar.allCar ? userCar.allCar.id : undefined,
         },
@@ -39,7 +47,10 @@ export class CarImagesService {
   }
 
   async getImagesByUserCar(userCarId: number) {
-    return this.prisma.carimages.findMany({ where: { userCarId } });
+    return this.prisma.carimages.findMany({ 
+      where: { userCarId }, 
+      orderBy: { order: 'asc' } 
+    });
   }
 
   async deleteImage(id: number) {
