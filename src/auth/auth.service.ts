@@ -116,6 +116,8 @@ export class AuthService {
         description: car.description,
         features: car.features,
         name: car.name,
+        SaleType: car.SaleType,
+        vinCode: car.vinCode,
         allCarsListId: car.allCarsListId ?? car.allCar?.id ?? null,
         phone: car.phone,
         email: car.email,
@@ -131,6 +133,7 @@ export class AuthService {
       where: { id: userId },
       include: {
         userCars: {
+          orderBy: { createdAt: 'desc' },
           include: {
             images: true,
             allCar: { include: { images: true } },

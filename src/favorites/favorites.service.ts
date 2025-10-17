@@ -41,7 +41,7 @@ export class FavoritesService {
       include: {
         car: { include: { images: true } },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { car: { createdAt: 'desc' } },
     });
 
     return rows.map((fav) => {
@@ -61,6 +61,8 @@ export class FavoritesService {
             brand: car.brand,
             model: car.model,
             year: car.year,
+            SaleType: car.SaleType,
+            vinCode: car.vinCode,
             price: car.price,
             mileage: car.mileage,
             gearbox: car.gearbox,
@@ -77,5 +79,6 @@ export class FavoritesService {
       };
     });
   }
+
 
 }
